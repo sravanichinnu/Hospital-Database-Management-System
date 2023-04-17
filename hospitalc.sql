@@ -88,8 +88,8 @@ CREATE TABLE Insurance (
 );
 
 CREATE TABLE Inventory (
-    drug_name VARCHAR(225) PRIMARY KEY,
-    average_cost_per_prescription DECIMAL(10, 2)
+    medicine_name VARCHAR(225) PRIMARY KEY,
+    cost DECIMAL(10, 2)
 );
 
 CREATE TABLE Medication (
@@ -106,7 +106,7 @@ CREATE TABLE Medication (
     time_to_take_2 VARCHAR(50),
     time_to_take_3 VARCHAR(50),
     FOREIGN KEY (employee_id) REFERENCES Staff(employee_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON UPDATE CASCADE ON DELETE RESTRICT
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 );
 drop table Medication;
 drop table Cashier;
@@ -120,7 +120,7 @@ CREATE TABLE Cashier (
     DateTime DATETIME,
     FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (prescription_id) REFERENCES Medication(prescription_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (medicine_name) REFERENCES Inventory(drug_name) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (medicine_name) REFERENCES Inventory(medicine_name) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE MedicationCashier (
