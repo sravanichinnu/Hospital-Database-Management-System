@@ -73,7 +73,7 @@ drop table MedicationCashier;
 
 select * from Patient;
 CREATE TABLE Appointment (
-  appointment_id INT PRIMARY KEY,
+  appointment_id INT PRIMARY KEY auto_increment,
   patient_id INT,
   branch_id INT,
   staff_id INT,
@@ -303,55 +303,90 @@ begin
 end$$
 delimiter ;
 
+
 delimiter $$
 create procedure admits_patient(in patient_id_p int, in branch_id_p int, in first_name_p varchar(50), in last_name_p varchar(50), 
 in age_p int, in email_p varchar(100), in phone_p varchar(20), in address_p varchar(255), in issue_p varchar(25), in surgery_done_p enum('Yes','No'), 
 in assigned_room_p varchar(25), in no_of_nights_p int, in is_discharged_p enum('Yes', 'No'))
 begin
+     declare employee_p int;
+     declare start_hour_p, end_hour_p time;
+     declare available_p varcahr(3);
      declare present_time time;
      select current_time() into present_time;
-     if issue_p = 'heart' then
-     begin
-        declare doctor_names_c cursor for
-           select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Cardiology';
-	 end;
-	 else if issue_p = 'eyes' then
-     begin
-        declare doctor_names_c cursor for 
-            select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Ophthamology';
-	 end;
-     else if issue_p = 'cancer' then
-     begin
-        declare doctor_names_c cursor for
-	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Oncology';
-	 end;
-     else if issue_p = 'female' then
-     begin
-        declare doctor_names_c cursor for
-	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Gynecology';
-	 end;
-     else if issue_p = 'brain' or issue_p = 'nerves' then
-     begin
-        declare doctor_names_c cursor for
-	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Neurology';
-	 end;
-     else if issue_p = 'bones' then
-     begin
-        declare doctor_names_c cursor for
-	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Radiology';
-	 end;
-     else
-     begin
-        declare doctor_names_c cursor for
-            select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Emergency';
-	 begin
-     end;
-     
+     if current_time() < '17:00:00' then
+          begin
+          declare doctor_names_c cursor for
+              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Cardiology' order by s.employee_id;
+	      end;
+	      else if issue_p = 'eyes' then
+          begin
+		  declare doctor_names_c cursor for 
+              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Ophthamology' order by s.employee_id;
+	      end;
+          else if issue_p = 'cancer' then
+          begin
+          declare doctor_names_c cursor for
+	          select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Oncology' order by s.employee_id;
+	      end;
+          else if issue_p = 'female' then
+          begin
+		  declare doctor_names_c cursor for
+			  select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Gynecology' order by s.employee_id;
+	      end;
+          else if issue_p = 'brain' or issue_p = 'nerves' then
+          begin
+		  declare doctor_names_c cursor for
+	         select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Neurology' order by s.employee_id;
+	      end;
+          else if issue_p = 'bones' then
+          begin
+          declare doctor_names_c cursor for
+	          select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Radiology' order by s.employee_id;
+	      end;
+          else
+          begin
+		  declare doctor_names_c cursor for
+              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Emergency' order by s.employee_id;
+	      begin
+          end;
+          declare continue handler for not found
+               set row_not_found = true;
+		  open doctor_names_c;
+          
+          while row_not_found = false do
+               fetch from doctor_names_c into employee_id_p, start_hour_p, end_hour_p, available_p;
+               select employee_id_p, start_hour_p, end_hour_p, available_p;
+               -- assuming walk-in appointments
+               if available_p = 'yes' then
+                    if current_time() < end_hour_p then
+                        update Staff set available = 'No' where employee_id = employee_id_p;
+                        curr_hour = hour(current_time());
+                        curr_minute = minute(current_time());
+                        if curr_minute >=1 or curr_minute <30 then
+                             curr_minute = 30
+						else if curr_minute >= 31 or curr_minute <= 60 then
+                             curr_minute = 0
+                             curr_hour = curr_hour + 1
+						
+                        
+                        
      
 end;
 delimiter ;
 
-
+declare continue handler for not found
+            set row_not_found = true;
+     open doctor_names_c;
+     while row_not_found = false do
+         fetch from doctor_names_c into employee_id_p, start_hour_p, end_hour_p, available_p;
+         select employee_id_p, start_hour_p, end_hour_p, avaiable_p;
+         -- assuming walk-in appointments
+         if available_p = 'Yes' then
+             if current_time() < end_hour_p then
+                 update Staff set available = 'No' where employee_id = employee_id_p;
+                 insert into Appointment(appointment_id, patient_id, employee_id, appointment_date, appointment_time)
+				values(
 
 
 # ------------------------------------------------------ 
