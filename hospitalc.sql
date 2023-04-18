@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS hospital;
 USE hospital;
 
 CREATE TABLE Hospital (
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
     branch_id INT PRIMARY KEY,
     no_of_employees INT,
     address VARCHAR(255),
