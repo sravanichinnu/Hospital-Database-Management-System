@@ -31,6 +31,10 @@ CREATE TABLE Staff (
     FOREIGN KEY (department_id) REFERENCES Department(department_id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
+Alter table Staff add start_hour time;
+alter table Staff add end_hour time;
+alter table Staff add available varchar(3) default 'Yes';
+select * from Staff;
 CREATE TABLE Room (
 	room_type varchar(25) primary key,
     cost_per_night DECIMAL(10, 2)
@@ -51,6 +55,7 @@ CREATE TABLE Patient (
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20) UNIQUE NOT NULL,
     address VARCHAR(255),
+    issue varchar(25) not null,
     surgery_done enum('Yes','No'),
     assigned_room varchar(25),
     no_of_nights INT,
@@ -58,7 +63,15 @@ CREATE TABLE Patient (
     FOREIGN KEY (assigned_room) REFERENCES Room(room_type) ON UPDATE CASCADE ON DELETE RESTRICT,
     foreign key (branch_id) references Hospital(branch_id) on update cascade on delete restrict
 );
+drop table Patient;
+drop table Appointment;
+drop table Insurance;
+drop table Medication;
+drop table Cashier;
+drop table MedicationCashier;
 
+
+select * from Patient;
 CREATE TABLE Appointment (
   appointment_id INT PRIMARY KEY,
   patient_id INT,
@@ -106,8 +119,9 @@ CREATE TABLE Medication (
     time_to_take_2 VARCHAR(50),
     time_to_take_3 VARCHAR(50),
     FOREIGN KEY (employee_id) REFERENCES Staff(employee_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
 drop table Medication;
 drop table Cashier;
 drop table MedicationCashier;
@@ -164,18 +178,18 @@ VALUES ('General ward', 150.00),
        ('Private ward', 400.00),
        ('Premium Deluxe', 900.00);
        
-INSERT INTO Patient (patient_id, branch_id, first_name, last_name, age, email, phone, address, surgery_done, assigned_room, no_of_nights, is_discharged) VALUES
-(2000, 16001, 'Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'yes', 'General ward', 3, 'Yes'),
-(2001, 16001, 'Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'No', 'Private ward', 7, 'No'),
-(2002, 16002, 'Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes'),
-(2003, 16002, 'James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia','No', 'General ward', 4, 'No'),
-(2004, 16002, 'Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA', 'Yes', 'Private ward', 9, 'Yes'),
-(2005, 16002, 'James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia', 'No', 'Premium Deluxe', 2, 'No'),
-(2006, 16002, 'Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'Yes', 'General ward', 10, 'Yes'),
-(2007, 16001, 'Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia', 'No', 'Private ward', 8, 'No'),
-(2008, 16001, 'Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA', 'Yes', 'Premium Deluxe', 6, 'Yes'),
-(2009, 16002, 'Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'No', 'General ward', 1, 'No'),
-(2010, 16002, 'Oliver', 'James', 23, 'oliver@gmail.com', '(857)455-3954', '2101 Elm St, Boston, MA', 'Yes', 'Private ward', 5, 'Yes');
+INSERT INTO Patient (patient_id, branch_id, first_name, last_name, age, email, phone, address, issue, surgery_done, assigned_room, no_of_nights, is_discharged) VALUES
+(2000, 16001, 'Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'heart','yes', 'General ward', 3, 'Yes'),
+(2001, 16001, 'Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'heart', 'No', 'Private ward', 7, 'No'),
+(2002, 16002, 'Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA','eyes', 'Yes', 'Premium Deluxe', 5, 'Yes'),
+(2003, 16002, 'James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia','brain','No', 'General ward', 4, 'No'),
+(2004, 16002, 'Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA','eyes', 'Yes', 'Private ward', 9, 'Yes'),
+(2005, 16002, 'James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia','eyes', 'No', 'Premium Deluxe', 2, 'No'),
+(2006, 16002, 'Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'female','Yes', 'General ward', 10, 'Yes'),
+(2007, 16001, 'Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia','brain', 'No', 'Private ward', 8, 'No'),
+(2008, 16001, 'Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA','heart', 'Yes', 'Premium Deluxe', 6, 'Yes'),
+(2009, 16002, 'Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'bones','No', 'General ward', 1, 'No'),
+(2010, 16002, 'Oliver', 'James', 23, 'oliver@gmail.com', '(857)455-3954', '2101 Elm St, Boston, MA', 'cancer', 'Yes', 'Private ward', 5, 'Yes');
 
 
 INSERT INTO Staff (employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id)
@@ -290,13 +304,53 @@ end$$
 delimiter ;
 
 delimiter $$
-create procedure admits_patient(in patient_id int, in branch_id int, in first_name varchar(50), in last_name varchar(50), 
-in age int, in email varchar(100), in phone varchar(20), in address varchar(255), in surgery_done enum('Yes','No'), in assigned_room varchar(25), 
-in no_of_nights int, in is_discharged enum('Yes', 'No'))
+create procedure admits_patient(in patient_id_p int, in branch_id_p int, in first_name_p varchar(50), in last_name_p varchar(50), 
+in age_p int, in email_p varchar(100), in phone_p varchar(20), in address_p varchar(255), in issue_p varchar(25), in surgery_done_p enum('Yes','No'), 
+in assigned_room_p varchar(25), in no_of_nights_p int, in is_discharged_p enum('Yes', 'No'))
 begin
-
-end $$
+     declare present_time time;
+     select current_time() into present_time;
+     if issue_p = 'heart' then
+     begin
+        declare doctor_names_c cursor for
+           select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Cardiology';
+	 end;
+	 else if issue_p = 'eyes' then
+     begin
+        declare doctor_names_c cursor for 
+            select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Ophthamology';
+	 end;
+     else if issue_p = 'cancer' then
+     begin
+        declare doctor_names_c cursor for
+	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Oncology';
+	 end;
+     else if issue_p = 'female' then
+     begin
+        declare doctor_names_c cursor for
+	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Gynecology';
+	 end;
+     else if issue_p = 'brain' or issue_p = 'nerves' then
+     begin
+        declare doctor_names_c cursor for
+	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Neurology';
+	 end;
+     else if issue_p = 'bones' then
+     begin
+        declare doctor_names_c cursor for
+	        select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Radiology';
+	 end;
+     else
+     begin
+        declare doctor_names_c cursor for
+            select * from Staff s join Department d on s.department_id = d.department_id where d.name = 'Emergency';
+	 begin
+     end;
+     
+     
+end;
 delimiter ;
+
 
 
 
