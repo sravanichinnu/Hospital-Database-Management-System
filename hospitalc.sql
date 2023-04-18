@@ -9,13 +9,25 @@ CREATE TABLE Hospital (
     visiting_hours VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Department (
-    department_id INT,
-    name VARCHAR(255) NOT NULL,
+drop table Department;
+drop table Staff;
+drop table Appointment;
+drop table Medication;
+drop table Cashier;
+drop table MedicationCashier;
+
+create table Department (
+    department_id int primary key,
+    name varchar(255) not null
+);
+
+CREATE TABLE department_heads (
+    department_id INT not null,
     branch_id INT NOT NULL,
-    department_head VARCHAR(255)NOT NULL,
-    PRIMARY KEY (department_id,branch_id),
-    FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    employee_id int not null,
+    foreign key (department_id) references Department(department_id) on update cascade on delete cascade,
+    foreign key (branch_id) references Hospital(branch_id) on update cascade on delete cascade
+    -- foreign key (employee_id) references Staff(employee_id) on update cascade on delete cascade
 );
 
 CREATE TABLE Staff (
@@ -157,21 +169,33 @@ INSERT INTO Hospital (name, branch_id, no_of_employees, address, visiting_hours)
 ('SRK Hospitals', 16001, 15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00'),
 ('SRK Hospitals', 16002, 15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
 
-INSERT INTO Department (department_id, name, branch_id, department_head) VALUES
-(101, 'Cardiology', 16001, 'Markus Brown'),
-(102, 'Gynecology', 16001, 'Ella Grey'),
-(103, 'Neurology', 16001, 'Kalyan Chakri'),
-(104, 'Oncology', 16001, 'James Smith'),
-(105, 'Ophthamology', 16001, 'Kathy Brook'),
-(106, 'Nursing', 16001, 'Emma Laurens'),
-(107, 'Radiology', 16001, 'Andrew Wong'),
-(101, 'Cardiology', 16002, 'Marie Jen'),
-(102, 'Gynecology', 16002, 'Anthony Williams'),
-(103, 'Neurology', 16002, 'Annie Jones'),
-(104, 'Oncology', 16002, 'Parth Setty'),
-(105, 'Ophthamology', 16002, 'Bai Chang'),
-(106, 'Nursing', 16002, 'Benjamin Miller'),
-(107, 'Radiology', 16002, 'Tom Harris');
+insert into Department(department_id, name) values 
+(101, 'Cardiology'),
+(102, 'Gynecology'),
+(103, 'Neurology'),
+(104, 'Oncology'),
+(105, 'Ophthamology'),
+(106, 'Nursing'),
+(107, 'Radiology'),
+(108, 'Emergency');
+
+insert into department_heads(department_id, branch_id, employee_id) values
+(101, 16001, 17001),
+(102, 16001, 17002),
+(103, 16001, 17003),
+(104, 16001, 17004),
+(105, 16001, 17005),
+(106, 16001, 17007),
+(107, 16001, 17014),
+(108, 16001, 17032),
+(101, 16002, 17008),
+(102, 16002, 17009),
+(103, 16002, 17010),
+(104, 16002, 17011),
+(105, 16002, 17012),
+(106, 16002, 17013),
+(107, 16002, 17015),
+(108, 16002, 17033);
 
 INSERT INTO Room (room_type, cost_per_night)
 VALUES ('General ward', 150.00),
@@ -223,7 +247,9 @@ VALUES (17001, 16001, 'Markus', 'Brown', 'Doctor', 'markus.br@srk.org', '(857)32
        (17028, 16001, 'Ram', 'Tagore', 'Doctor', 'ram.ta@srk.org', '(857)546-9379', 106),
        (17029, 16002, 'Sunil', 'Chaitya', 'Doctor', 'sunil.ch@srk.org', '(617)368-3947', 106),
        (17030, 16001, 'Hae', 'Soo', 'Doctor', 'hae.so@srk.org', '(857)239-9083', 107),
-       (17031, 16002, 'Li', 'Chang', 'Doctor', 'li.ch@srk.org', '(617)247-0909', 107);
+       (17031, 16002, 'Li', 'Chang', 'Doctor', 'li.ch@srk.org', '(617)247-0909', 107),
+       (17032, 16001, 'Star', 'Angie', 'Doctor', 'star.an@srk.org','(734)479-9734',108),
+       (17033, 16002, 'Vijay', 'Varma', 'Doctor','vijay.va@srk.org', '(873)863-9847', 108);
        
        
 INSERT INTO Appointment (appointment_id, patient_id, branch_id, staff_id, appointment_date, appointment_time)
@@ -368,6 +394,7 @@ begin
 						else if curr_minute >= 31 or curr_minute <= 60 then
                              curr_minute = 0
                              curr_hour = curr_hour + 1
+					    
 						
                         
                         
