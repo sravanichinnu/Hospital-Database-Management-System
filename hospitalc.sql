@@ -266,7 +266,7 @@ VALUES
   (10, 2009, 16002, 17024, '2023-04-10', '10:45:00'),
   (11, 2010, 16002, 17028, '2023-04-10', '11:00:00');
   
-INSERT INTO Inventory (drug_name, average_cost_per_prescription)
+INSERT INTO Inventory (medicine_name, cost)
 VALUES
 ('Advil', 19.99),
 ('Avil', 14.99),
