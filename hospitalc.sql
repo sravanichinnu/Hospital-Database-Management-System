@@ -324,20 +324,23 @@ delimiter $$
 create procedure generate_prescription(in patient_id_p int, in staff_id_p int, in medicine_name_p varchar(255), in dosage_p varchar(50), 
                  in time_to_take_p varchar(50))
 begin
-     insert into Medication(medicine_name, employee_id, patient_id, dosage, time_to_take) 
+     insert into Medication(medicine_1, employee_id, patient_id, dosage1, time_to_take_1) 
      values(medicine_name_p, staff_id_p, patient_id_p, dosage_p, time_to_take_p);
 end$$
 delimiter ;
 
-
+call generate_prescription(2010, 17004, 'Advil', '20 mg', 'once a day');
+-- checked
+select * from Medication;
 delimiter $$
+
 create procedure admits_patient(in patient_id_p int, in branch_id_p int, in first_name_p varchar(50), in last_name_p varchar(50), 
 in age_p int, in email_p varchar(100), in phone_p varchar(20), in address_p varchar(255), in issue_p varchar(25), in surgery_done_p enum('Yes','No'), 
 in assigned_room_p varchar(25), in no_of_nights_p int, in is_discharged_p enum('Yes', 'No'))
 begin
      declare employee_p int;
      declare start_hour_p, end_hour_p time;
-     declare available_p varcahr(3);
+     declare available_p varchar(3);
      declare present_time time;
      select current_time() into present_time;
      if current_time() < '17:00:00' then
@@ -376,11 +379,13 @@ begin
               select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Emergency' order by s.employee_id;
 	      begin
           end;
+	end;
           declare continue handler for not found
                set row_not_found = true;
 		  open doctor_names_c;
           
           while row_not_found = false do
+          begin
                fetch from doctor_names_c into employee_id_p, start_hour_p, end_hour_p, available_p;
                select employee_id_p, start_hour_p, end_hour_p, available_p;
                -- assuming walk-in appointments
@@ -394,26 +399,18 @@ begin
 						else if curr_minute >= 31 or curr_minute <= 60 then
                              curr_minute = 0
                              curr_hour = curr_hour + 1
-					    
-						
-                        
-                        
-     
-end;
+						end if;
+					    str_time = curr_hour+":"+curr_minute+":"+"00"
+                        appoint_time = str_to_date(str_time, '%H:%i:%s');
+                        sys_date = curdate();
+                        insert into Appointment(patient_id, employee_id, appointment_date, appointment_time) values(patient_id_p, employee_id_p, sys_date, str_time);
+					break;
+			end;
+		end;
+end$$
 delimiter ;
 
-declare continue handler for not found
-            set row_not_found = true;
-     open doctor_names_c;
-     while row_not_found = false do
-         fetch from doctor_names_c into employee_id_p, start_hour_p, end_hour_p, available_p;
-         select employee_id_p, start_hour_p, end_hour_p, avaiable_p;
-         -- assuming walk-in appointments
-         if available_p = 'Yes' then
-             if current_time() < end_hour_p then
-                 update Staff set available = 'No' where employee_id = employee_id_p;
-                 insert into Appointment(appointment_id, patient_id, employee_id, appointment_date, appointment_time)
-				values(
+call admits_patient(2011, 16001, 'Xy','Abc', 77, 'xy.abc@yahoo.com', '(435)234-4839', 'some xyz address, Boston', 'heart', 'No', 'Private Ward', ,4, 'No');
 
 
 # ------------------------------------------------------ 
