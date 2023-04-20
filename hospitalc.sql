@@ -17,7 +17,7 @@ drop table Cashier;
 drop table MedicationCashier;
 
 create table Department (
-    department_id int primary key,
+    department_id int primary key auto_increment,
     name varchar(255) not null
 );
 
@@ -31,7 +31,7 @@ CREATE TABLE department_heads (
 );
 
 CREATE TABLE Staff (
-    employee_id INT PRIMARY KEY,
+    employee_id INT PRIMARY KEY auto_increment,
     branch_id INT NOT NULL,
     employee_first_name VARCHAR(255) NOT NULL,
     employee_last_name VARCHAR(255) NOT NULL,
@@ -332,88 +332,17 @@ delimiter ;
 call generate_prescription(2010, 17004, 'Advil', '20 mg', 'once a day');
 -- checked
 select * from Medication;
+
+-- to add any new department to the hospital
 delimiter $$
 
-create procedure admits_patient(in patient_id_p int, in branch_id_p int, in first_name_p varchar(50), in last_name_p varchar(50), 
-in age_p int, in email_p varchar(100), in phone_p varchar(20), in address_p varchar(255), in issue_p varchar(25), in surgery_done_p enum('Yes','No'), 
-in assigned_room_p varchar(25), in no_of_nights_p int, in is_discharged_p enum('Yes', 'No'))
+create procedure new_department(in department_id_p int, department_name_p varchar(50))
 begin
-     declare employee_p int;
-     declare start_hour_p, end_hour_p time;
-     declare available_p varchar(3);
-     declare present_time time;
-     select current_time() into present_time;
-     if current_time() < '17:00:00' then
-          begin
-          declare doctor_names_c cursor for
-              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Cardiology' order by s.employee_id;
-	      end;
-	      else if issue_p = 'eyes' then
-          begin
-		  declare doctor_names_c cursor for 
-              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Ophthamology' order by s.employee_id;
-	      end;
-          else if issue_p = 'cancer' then
-          begin
-          declare doctor_names_c cursor for
-	          select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Oncology' order by s.employee_id;
-	      end;
-          else if issue_p = 'female' then
-          begin
-		  declare doctor_names_c cursor for
-			  select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Gynecology' order by s.employee_id;
-	      end;
-          else if issue_p = 'brain' or issue_p = 'nerves' then
-          begin
-		  declare doctor_names_c cursor for
-	         select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Neurology' order by s.employee_id;
-	      end;
-          else if issue_p = 'bones' then
-          begin
-          declare doctor_names_c cursor for
-	          select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Radiology' order by s.employee_id;
-	      end;
-          else
-          begin
-		  declare doctor_names_c cursor for
-              select employee_id, start_hour, end_hour, available from Staff s join Department d on s.department_id = d.department_id where d.name = 'Emergency' order by s.employee_id;
-	      begin
-          end;
-	end;
-          declare continue handler for not found
-               set row_not_found = true;
-		  open doctor_names_c;
-          
-          while row_not_found = false do
-          begin
-               fetch from doctor_names_c into employee_id_p, start_hour_p, end_hour_p, available_p;
-               select employee_id_p, start_hour_p, end_hour_p, available_p;
-               -- assuming walk-in appointments
-               if available_p = 'yes' then
-                    if current_time() < end_hour_p then
-                        update Staff set available = 'No' where employee_id = employee_id_p;
-                        curr_hour = hour(current_time());
-                        curr_minute = minute(current_time());
-                        if curr_minute >=1 or curr_minute <30 then
-                             curr_minute = 30
-						else if curr_minute >= 31 or curr_minute <= 60 then
-                             curr_minute = 0
-                             curr_hour = curr_hour + 1
-						end if;
-					    str_time = curr_hour+":"+curr_minute+":"+"00"
-                        appoint_time = str_to_date(str_time, '%H:%i:%s');
-                        sys_date = curdate();
-                        insert into Appointment(patient_id, employee_id, appointment_date, appointment_time) values(patient_id_p, employee_id_p, sys_date, str_time);
-					break;
-			end;
-		end;
+	insert into Department(department_id, name) values (department_id_p, department_name_p);
 end$$
 delimiter ;
 
-call admits_patient(2011, 16001, 'Xy','Abc', 77, 'xy.abc@yahoo.com', '(435)234-4839', 'some xyz address, Boston', 'heart', 'No', 'Private Ward', ,4, 'No');
+call new_department(109, 'Pulmonology');
 
-
-# ------------------------------------------------------ 
-
-# ------------------------------------------------------ 
+select * from Department;
 
