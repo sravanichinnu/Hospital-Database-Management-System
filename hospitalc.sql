@@ -359,3 +359,29 @@ delimiter ;
 call new_employee(17034, 16001, 'Mark', 'Carls', 'Doctor', 'mark.ca@srk.org', '(345)435-0983', 103);
 select * from Staff;
 
+-- trigger to increase the count ofnumber of employees present in a hospital after a new employee is inserted 
+delimiter $$
+create trigger increase_employee_count after insert on Staff
+for each row
+begin
+	declare hospital_count int;
+    select no_of_employees into hospital_count from Hospital
+    where branch_id = new.branch_id for update;
+    -- for update is used to lock the selected row until the end of the transaction
+    
+    if hospital_count is null then
+		signal sqlstate '45000' set message_text = 'Branch id does nto exist';
+	end if;
+    
+    update Hospital set no_of_employees = no_of_employees + 1 
+    where branch_id = new.branch_id;
+    
+end$$
+delimiter ;
+-- checking for the trigger, trying to insert an employee
+call new_employee(17036, 16002, 'Thor', 'Williams', 'Doctor', 'thor.wi@srk.org', '(645)335-0483', 104);
+select * from Staff;
+select * from Hospital;
+
+
+
