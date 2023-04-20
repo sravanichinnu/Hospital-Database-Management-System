@@ -1,4 +1,5 @@
 
+
 import pymysql.cursors
 import traceback
 
@@ -44,40 +45,77 @@ with connection:
     print("welcome " + username + ", please enter a command")
     command = input("Please enter your cmd: ")
 
-    if command == "new_department":
-        depId = input("Please enter the new department id number: ")
-        depName = input("Please enter the new department name: ")
+    while command != "quit":
+        if command == "new_department":
+            depId = input("Please enter the new department id number: ")
+            depName = input("Please enter the new department name: ")
 
-        with connection.cursor() as cursor:
-            try:
-                args = (int(depId), depName, )
-                print(args)
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(depId), depName, )
+                    print(args)
 
-                # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
-                # print (newdep)
-                cursor.callproc('new_department', args)
-                # call new_department(109,'Pulmonology');
-                # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
-                # sql = "call new_department(%d,%s)"
-                # sql = "call new_department(%d,'test')"
-                # cursor.execute(sql, (int(depId)))
+                    # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
+                    # print (newdep)
+                    cursor.callproc('new_department', args)
+                    # call new_department(109,'Pulmonology');
+                    # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
+                    # sql = "call new_department(%d,%s)"
+                    # sql = "call new_department(%d,'test')"
+                    # cursor.execute(sql, (int(depId)))
 
-                #sql = "SELECT `department_id`, `name` FROM `Department` WHERE `department_id`=%d"
-                #cursor.execute(sql, (110,))
+                    #sql = "SELECT `department_id`, `name` FROM `Department` WHERE `department_id`=%d"
+                    #cursor.execute(sql, (110,))
 
-                #result = cursor.fetchone()
-                # connection.commit()
-                #print(result)
-                connection.commit()
+                    #result = cursor.fetchone()
+                    # connection.commit()
+                    #print(result)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
 
-                # cursor.callproc()
-            # Print the result of the executed stored procedure
+                    # cursor.callproc()
+                # Print the result of the executed stored procedure
 
-            except Exception as e:
-                traceback.print_exc()
-                print("Exeception occured:{}".format(e))
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
 
-            finally:
-                cursor.close()
+                #finally:
+                    #command = input("Please enter your cmd: ")
+                    #break
+
+
+
+
+        if command == "new_employee":
+            employee_id_int = input("Please enter employee id: ")
+            branch_id_int = input("Please enter the branch id ")
+            first_name = input("Please enter the employee's first name ")
+            last_name = input("Please enter the employee's last name ")
+            designation = input("Please enter the job designation ")
+            email = input("Please enter the employee's email ")
+            phone = input("Please enter the employee's phone number ")
+            department_id_int = input("Please enter the department id ")
+
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(employee_id_int), int(branch_id_int),first_name,last_name, designation, email, phone, int(department_id_int))
+                    print(args)
+                    cursor.callproc('new_employee', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+                #finally:
+                    #command = input("Please enter your cmd: ")
+                    #break
+
+
+
 
 
