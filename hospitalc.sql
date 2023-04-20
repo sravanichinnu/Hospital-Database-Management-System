@@ -31,7 +31,7 @@ CREATE TABLE Staff (
 );
 alter table  Staff auto_increment = 17001;
 
-create table StaffWokringHours (
+create table StaffWorkingHours (
     employee_id int primary key not null,
     start_time time not null,
     end_time time not null,
@@ -45,14 +45,13 @@ CREATE TABLE Room (
 
 CREATE TABLE Patient (
     patient_id INT PRIMARY KEY auto_increment,
-    branch_id int not null,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     age INT,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20) UNIQUE NOT NULL,
     address VARCHAR(255),
-    issue varchar(25) not null,
+    -- issue varchar(25) not null,
     surgery_done enum('Yes','No'),
     assigned_room varchar(25) not null,
     no_of_nights INT,
@@ -61,7 +60,6 @@ CREATE TABLE Patient (
     check_in_time DateTime,
     appointment_end_time datetime,
     FOREIGN KEY (assigned_room) REFERENCES Room(room_type) ON UPDATE CASCADE ON DELETE RESTRICT,
-    foreign key (branch_id) references Hospital(branch_id) on update cascade on delete restrict,
     foreign key (employee_id) references Staff(employee_id) on update cascade on delete restrict
 );
 alter table Patient auto_increment = 2000;
@@ -169,21 +167,21 @@ VALUES ('General ward', 150.00),
        ('Private ward', 400.00),
        ('Premium Deluxe', 900.00);
        
-INSERT INTO Patient (patient_id, branch_id, first_name, last_name, age, email, phone, address, issue, surgery_done, assigned_room, no_of_nights, is_discharged) VALUES
-(2000, 16001, 'Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'heart','yes', 'General ward', 3, 'Yes'),
-(2001, 16001, 'Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'heart', 'No', 'Private ward', 7, 'No'),
-(2002, 16002, 'Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA','eyes', 'Yes', 'Premium Deluxe', 5, 'Yes'),
-(2003, 16002, 'James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia','brain','No', 'General ward', 4, 'No'),
-(2004, 16002, 'Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA','eyes', 'Yes', 'Private ward', 9, 'Yes'),
-(2005, 16002, 'James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia','eyes', 'No', 'Premium Deluxe', 2, 'No'),
-(2006, 16002, 'Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'female','Yes', 'General ward', 10, 'Yes'),
-(2007, 16001, 'Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia','brain', 'No', 'Private ward', 8, 'No'),
-(2008, 16001, 'Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA','heart', 'Yes', 'Premium Deluxe', 6, 'Yes'),
-(2009, 16002, 'Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'bones','No', 'General ward', 1, 'No'),
-(2010, 16002, 'Oliver', 'James', 23, 'oliver@gmail.com', '(857)455-3954', '2101 Elm St, Boston, MA', 'cancer', 'Yes', 'Private ward', 5, 'Yes');
+INSERT INTO Patient (patient_id,first_name, last_name, age, email, phone, address, surgery_done, assigned_room, no_of_nights, is_discharged) VALUES
+(2000, 'Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA','yes', 'General ward', 3, 'Yes'),
+(2001, 'Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia','No', 'Private ward', 7, 'No'),
+(2002, 'Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes'),
+(2003, 'James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia','No', 'General ward', 4, 'No'),
+(2004, 'Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA', 'Yes', 'Private ward', 9, 'Yes'),
+(2005, 'James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia', 'No', 'Premium Deluxe', 2, 'No'),
+(2006, 'Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'Yes', 'General ward', 10, 'Yes'),
+(2007, 'Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia', 'No', 'Private ward', 8, 'No'),
+(2008, 'Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA', 'Yes', 'Premium Deluxe', 6, 'Yes'),
+(2009, 'Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'No', 'General ward', 1, 'No'),
+(2010, 'Oliver', 'James', 23, 'oliver@gmail.com', '(857)455-3954', '2101 Elm St, Boston, MA', 'Yes', 'Private ward', 5, 'Yes');
 
 
-INSERT INTO Staff (employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id)
+INSERT INTO Staff (employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id, is_head)
 VALUES (17001, 16001, 'Markus', 'Brown', 'Doctor', 'markus.br@srk.org', '(857)324-6758', 101, 1),
        (17002, 16001, 'Ella', 'Grey', 'Doctor', 'ella.gr@srk.org', '(857)234-3554', 102,1),
        (17003, 16001, 'Kalyan', 'Chakri', 'Doctor', 'kalyan.ch@srk.org', '(617)342-2342', 103,1),
@@ -297,7 +295,6 @@ INSERT INTO Insurance (insurance_id, provider, plan_type, coverage, expiry_date,
 -- procedure to admit a patient by updating the Appointment table
 delimiter $$
 CREATE PROCEDURE AdmitPatient(
-    IN p_patient_id INT,
     IN p_first_name VARCHAR(50),
     IN p_last_name VARCHAR(50),
     IN p_age INT,
@@ -327,7 +324,6 @@ BEGIN
     IF available_doctor_id IS NOT NULL THEN
         -- Insert the patient record and assign the available doctor
         INSERT INTO Patient (
-            patient_id,
             first_name,
             last_name,
             age,
@@ -343,7 +339,6 @@ BEGIN
             appointment_end_time
         )
         VALUES (
-            p_patient_id,
             p_first_name,
             p_last_name,
             p_age,
@@ -366,7 +361,6 @@ $$
 DELIMITER ;
 
 CALL AdmitPatient(
-    2015,
     'John',
     'Doe',
     35,
@@ -378,35 +372,20 @@ CALL AdmitPatient(
     3,
     'No'
 );
-
-UPDATE StaffWorkingHours SET end_time = "17:00:00" WHERE employee_id = '17001';
-SELECT * FROM Patient;
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
--- procedure to geenrate a prescription after the patient is checked by a doctor.
-delimiter $$
-create procedure generate_prescription (
-    in patient_id_p int, 
-    in staff_id_p int, 
-    in medicine_name_p varchar(255), 
-    in dosage_p varchar(50), 
-    in time_to_take_p varchar(50)
-)
-begin
-     insert into Medication(medicine_1, employee_id, patient_id, dosage1, time_to_take_1) 
-     values(medicine_name_p, staff_id_p, patient_id_p, dosage_p, time_to_take_p);
-end$$
-delimiter ;
-
-call generate_prescription(
-    2010,
-    17004,
-    'Advil',
-    '20 mg',
-    'once a day'
+CALL AdmitPatient(
+    'Rex',
+    'Carlos',
+    65,
+    'rex.carlos@yahoo.com',
+    '+1-555-133-4567',
+    '133 Main St, Anytown, USA',
+    'No',
+    'General ward',
+    3,
+    'No'
 );
-select * from Medication;
+-- UPDATE StaffWorkingHours SET end_time = "17:00:00" WHERE employee_id = '17001';
+SELECT * FROM Patient;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -528,23 +507,22 @@ END $$
 
 DELIMITER ;
 
+call insert_bill_into_cashier(2001);
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- procedure to add a new department to the hospital
 delimiter $$
 
 create procedure new_department(
-    in department_id_p int, 
-    department_name_p varchar(50)
+    in department_name_p varchar(50)
 )
 begin
-	insert into Department(department_id, name) values (department_id_p, department_name_p);
+	insert into Department(name) values (department_name_p);
 end$$
 delimiter ;
 
 call new_department(
-    109,
-    'Pulmonology'
+    'Anesthesiology'
 );
 
 select * from Department;
@@ -554,7 +532,6 @@ select * from Department;
 -- procedure to add new employee to the Staff table
 delimiter $$
 create procedure new_employee(
-    in employee_id_p int, 
     in branch_id_p int, 
     in first_name_p varchar(50), 
     in last_name_p varchar(50), 
@@ -564,20 +541,19 @@ create procedure new_employee(
     in department_id_p int
 ) 
 begin
-	insert into Staff(employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id) 
-    values(employee_id_p, branch_id_p, first_name_p, last_name_p, designation_p, email_p, phone_p, department_id_p);
+	insert into Staff(branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id) 
+    values(branch_id_p, first_name_p, last_name_p, designation_p, email_p, phone_p, department_id_p);
 end$$
 delimiter ;
 
 call new_employee(
-    17034, 
     16001, 
-    'Mark', 
-    'Carls', 
-    'Doctor', 
-    'mark.ca@srk.org', 
-    '(345)435-0983', 
-    103
+    'Robert', 
+    'Pattinson', 
+    'Nurse', 
+    'robert.pa@srk.org', 
+    '(342)435-0183', 
+    106
 );
 select * from Staff;
 
@@ -675,7 +651,6 @@ SELECT * FROM Inventory;
 DELIMITER $$
 
 CREATE PROCEDURE InsertMedication (
-    IN p_prescription_id INT,
     IN p_employee_id INT,
     IN p_patient_id INT,
     IN p_medicines TEXT,
@@ -735,14 +710,12 @@ BEGIN
 		END IF;
 	END IF;
 
-
-
     INSERT INTO Medication (
-        prescription_id, employee_id, patient_id, medicine_1, medicine_2, medicine_3,
+        employee_id, patient_id, medicine_1, medicine_2, medicine_3,
         dosage1, dosage2, dosage3, time_to_take_1, time_to_take_2, time_to_take_3
     )
     VALUES (
-        p_prescription_id, p_employee_id, p_patient_id,
+        p_employee_id, p_patient_id,
         v_medicine_1,v_medicine_2, v_medicine_3,
         v_dosage1, v_dosage2, v_dosage3,
         v_time_to_take_1, v_time_to_take_2, v_time_to_take_3
@@ -750,10 +723,9 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
-CALL InsertMedication(23, 17001, 2021, 'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
-
+select * from Patient;
+CALL InsertMedication(17001, 2018, 'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
+-- delete from Medication where prescription_id = 7;
 SELECT * FROM Medication;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -761,41 +733,41 @@ SELECT * FROM Medication;
 DELIMITER $$
 CREATE PROCEDURE InsertHospitalData(
     IN p_name VARCHAR(255),
-    IN p_branch_id INT,
     IN p_no_of_employees INT,
     IN p_address VARCHAR(255),
     IN p_visiting_hours VARCHAR(255)
 )
 BEGIN
-  INSERT INTO Hospital (name, branch_id, no_of_employees, address, visiting_hours)
+  INSERT INTO Hospital (name, no_of_employees, address, visiting_hours)
   VALUES
-  (p_name, p_branch_id, p_no_of_employees, p_address, p_visiting_hours);
+  (p_name, p_no_of_employees, p_address, p_visiting_hours);
 END $$
 DELIMITER ;
 
-CALL InsertHospitalData('SRK Hospitals', 16001, 15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
-CALL InsertHospitalData('SRK Hospitals', 16002, 15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
-
+-- CALL InsertHospitalData('SRK Hospitals', 16001, 15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
+-- CALL InsertHospitalData('SRK Hospitals', 16002, 15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
+CALL InsertHospitalData('SRK Hospitals', 20, 'Valian St, Georgia', '10:00:00 - 18:00:00');
+select * from Hospital;
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- procedure to isnert new pharmacies
 DELIMITER $$
 CREATE PROCEDURE InsertPharmacyData(
-    IN p_pharmacy_id INT,
     IN p_branch_id INT,
     IN p_location VARCHAR(255)
 )
 BEGIN
-  INSERT INTO Pharmacy (pharmacy_id, branch_id, location)
+  INSERT INTO Pharmacy (branch_id, location_p)
   VALUES
-  (p_pharmacy_id, p_branch_id, p_location);
+  (p_branch_id, p_location);
 END $$
 DELIMITER ;
-
-CALL InsertPharmacyData(10001, 1, 'New York');
-CALL InsertPharmacyData(10002, 2, 'Los Angeles');
-CALL InsertPharmacyData(10003, 3, 'Chicago');
-
+select * from Hospital;
+-- CALL InsertPharmacyData(10001, 1, 'New York');
+-- CALL InsertPharmacyData(10002, 2, 'Los Angeles');
+-- CALL InsertPharmacyData(10003, 3, 'Chicago');
+call InsertPharmacyData(16003, 'Virginia');
+select * from Pharmacy;
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- procedure to insert into the type of room
@@ -834,7 +806,7 @@ BEGIN
 END; $$
 DELIMITER ;
 
-CALL DischargePatient(2021);
+CALL DischargePatient(2018);
 SELECT * from Patient;
 SELECT * FROM Cashier;
 
@@ -863,7 +835,7 @@ BEGIN
 END; //
 DELIMITER ;
 
-CALL PayBill(2021);
+CALL PayBill(2001);
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- trigger to increase the count for number of employees present in a hospital after a new employee is inserted 
