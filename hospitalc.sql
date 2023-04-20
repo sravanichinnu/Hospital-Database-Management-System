@@ -346,3 +346,16 @@ call new_department(109, 'Pulmonology');
 
 select * from Department;
 
+-- to add new employee to the Staff table
+delimiter $$
+create procedure new_employee(in employee_id_p int, in branch_id_p int, in first_name_p varchar(50), in last_name_p varchar(50), in designation_p varchar(10), in email_p varchar(100), in phone_p varchar(15),
+in department_id_p int) 
+begin
+	insert into Staff(employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id) 
+    values(employee_id_p, branch_id_p, first_name_p, last_name_p, designation_p, email_p, phone_p, department_id_p);
+end$$
+delimiter ;
+
+call new_employee(17034, 16001, 'Mark', 'Carls', 'Doctor', 'mark.ca@srk.org', '(345)435-0983', 103);
+select * from Staff;
+
