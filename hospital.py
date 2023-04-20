@@ -1,13 +1,20 @@
 
+
 import pymysql.cursors
 
 # Connect to the database
-connection = pymysql.connect(host='172.16.96.126',
-                             user='admin1',
-                             password='root',
+username = input("Please enter your username: ")
+password = input("Please enter your password: ")
+
+try:
+    connection = pymysql.connect(host='localhost',
+                             user=username,
+                             password=password,
                              database='hospital',
                              cursorclass=pymysql.cursors.DictCursor)
-
+except:
+    print("Error while connecting to MySQL")
+#do you need port22? figure out.
 with connection:
     with connection.cursor() as cursor:
         # Create a new record
@@ -23,4 +30,35 @@ with connection:
         sql = "SELECT `medicine_name`, `cost` FROM `Inventory` WHERE `medicine_name`=%s"
         cursor.execute(sql, ('AaTest',))
     result = cursor.fetchone()
+    connection.commit()
     print(result)
+
+    with connection.cursor() as cursor:
+        # Read a single record
+        sql = "DELETE FROM `hospital`.`Inventory` WHERE `medicine_name` =%s"
+        cursor.execute(sql, ('AaTest',))
+    result = cursor.fetchone()
+    connection.commit()
+    print("deleted")
+
+
+
+print("welcome " + username + ", please enter a command")
+command = input("Please enter your cmd: ")
+
+
+if command == "new_department":
+    depId = input("Please enter the new department id number: ")
+    depName = input("Please enter the new department name: ")
+
+with connection.cursor() as cursor:
+    try:
+    # Execute the sqlQuery
+        cursor.execute('call new_department({depId}, {depName})')
+    # Print the result of the executed stored procedure
+
+    except Exception as e:
+        print("Exeception occured:{}".format(e))
+
+    finally:
+        cursor.close()
