@@ -2,32 +2,48 @@ CREATE DATABASE IF NOT EXISTS hospital;
 USE hospital;
 
 CREATE TABLE Pharmacy (
-    pharmacy_id INT PRIMARY KEY,
+    pharmacy_id INT PRIMARY KEY AUTO_INCREMENT,
     branch_id INT,
     location VARCHAR(255)
     
 );
+alter table Pharmacy auto_increment = 10000;
 CREATE TABLE Hospital (
     name VARCHAR(255) NOT NULL,
-    branch_id INT PRIMARY KEY,
+    branch_id INT PRIMARY KEY AUTO_INCREMENT,
     no_of_employees INT,
     address VARCHAR(255),
     visiting_hours VARCHAR(50) NOT NULL
 );
-CREATE TABLE Department (
-    department_id INT,
-    name VARCHAR(255) NOT NULL,
-    branch_id INT NOT NULL,
-    department_head VARCHAR(255)NOT NULL,
-    PRIMARY KEY (department_id,branch_id),
-    FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id) ON DELETE RESTRICT ON UPDATE CASCADE
+
+alter table Hospital auto_increment = 16001;
+
+create table Department (
+    department_id int primary key auto_increment,
+    name varchar(255) not null
 );
+
 CREATE TABLE Room (
 	room_type VARCHAR(64) PRIMARY KEY,
     cost_per_night DECIMAL(10, 2)
 );
+CREATE TABLE Staff (
+    employee_id INT PRIMARY KEY AUTO_INCREMENT,
+    branch_id INT NOT NULL,
+    employee_first_name VARCHAR(255) NOT NULL,
+    employee_last_name VARCHAR(255) NOT NULL,
+    designation VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    phone_no VARCHAR(20) NOT NULL,
+    department_id INT NOT NULL,
+    FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+	FOREIGN KEY (department_id) REFERENCES Department(department_id) ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+
+
+alter table  Staff auto_increment = 17001;
 CREATE TABLE Patient (
-    patient_id INT PRIMARY KEY,
+    patient_id INT AUTO_INCREMENT PRIMARY KEY ,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     age INT,
@@ -38,19 +54,16 @@ CREATE TABLE Patient (
     assigned_room VARCHAR(64) NOT NULL,
     no_of_nights INT,
     is_discharged ENUM('Yes', 'No'),
-    FOREIGN KEY (assigned_room) REFERENCES Room(room_type) ON UPDATE CASCADE ON DELETE RESTRICT
+    employee_id INT,
+    check_in_time DATETIME,
+    appointment_end_time DATETIME,
+    FOREIGN KEY (assigned_room) REFERENCES Room(room_type) ON UPDATE CASCADE ON DELETE RESTRICT,
+    foreign key (employee_id) references Staff(employee_id) on update cascade on delete restrict
 );
-CREATE TABLE Staff (
-    employee_id INT PRIMARY KEY,
-    branch_id INT NOT NULL,
-    employee_first_name VARCHAR(255) NOT NULL,
-    employee_last_name VARCHAR(255) NOT NULL,
-    designation VARCHAR(255),
-    email VARCHAR(255) NOT NULL,
-    phone_no VARCHAR(20) NOT NULL,
-    department_id VARCHAR(255) NOT NULL,
-    FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id) ON UPDATE RESTRICT ON DELETE RESTRICT
-);
+
+ALTER TABLE Patient AUTO_INCREMENT = 2000;
+
+
 CREATE TABLE Appointment (
   appointment_id INT PRIMARY KEY,
   patient_id INT,
@@ -62,6 +75,7 @@ CREATE TABLE Appointment (
   FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id),
   FOREIGN KEY (staff_id) REFERENCES Staff(employee_id)
 );
+
 
 CREATE TABLE Insurance (
     insurance_id INT,
@@ -120,6 +134,14 @@ CREATE TABLE MedicationCashier (
     PRIMARY KEY (prescription_id,bill_id)
 );
 
+CREATE TABLE StaffWorkingHours (
+    employee_id INT PRIMARY KEY NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    
+    FOREIGN KEY (employee_id) REFERENCES Staff(employee_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 # insert statements 
 INSERT INTO Pharmacy (pharmacy_id, branch_id, location) VALUES
 (10001, 1, 'New York'),
@@ -142,23 +164,6 @@ insert into Department(department_id, name) values
 (107, 'Radiology'),
 (108, 'Emergency');
 
-insert into department_heads(department_id, branch_id, employee_id) values
-(101, 16001, 17001),
-(102, 16001, 17002),
-(103, 16001, 17003),
-(104, 16001, 17004),
-(105, 16001, 17005),
-(106, 16001, 17007),
-(107, 16001, 17014),
-(108, 16001, 17032),
-(101, 16002, 17008),
-(102, 16002, 17009),
-(103, 16002, 17010),
-(104, 16002, 17011),
-(105, 16002, 17012),
-(106, 16002, 17013),
-(107, 16002, 17015),
-(108, 16002, 17033);
 
 INSERT INTO Room (room_type, cost_per_night)
 VALUES ('General ward', 150.00),
@@ -273,6 +278,18 @@ INSERT INTO Insurance (insurance_id, provider, plan_type, coverage, expiry_date,
 (60005, 'SecureHealth', 'Gold', 7500.00, '2024-12-31', 2009),
 (60006, 'SecureHealth', 'Gold', 7500.00, '2024-12-31', 2003),
 (60007, 'SecureHealth', 'Gold', 7500.00, '2024-12-31', 2000);
+
+INSERT INTO StaffWorkingHours (employee_id,start_time, end_time) VALUES
+(17001,'08:00:00', '16:00:00'),
+(17002,'09:00:00', '17:00:00'),
+(17003,'10:00:00', '18:00:00'),
+(17004,'11:00:00', '19:00:00'),
+(17005,'12:00:00', '20:00:00'),
+(17006,'13:00:00', '21:00:00'),
+(17007,'14:00:00', '22:00:00'),
+(17008,'15:00:00', '23:00:00'),
+(17009,'16:00:00', '00:00:00'),
+(17010,'17:00:00', '01:00:00');
 
 
 
