@@ -1,5 +1,3 @@
-
-
 import pymysql.cursors
 import traceback
 
@@ -114,8 +112,65 @@ with connection:
                 #finally:
                     #command = input("Please enter your cmd: ")
                     #break
+        # checkout (three commands) insert_bill_into_cashier --> PayBill --> Discharge (Discharge is called from Paybill)
+        if command == "checkout":
+            patient_id_int = input("Please enter the department id ")
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(employee_id_int))
+                    print(args)
+                    cursor.callproc('insert_bill_into_cashier', args)
+                    print("Bill is inserted")
+                    cursor.callproc('PayBill', args)
+                    print("Bill is Paid")
+                    #for debug, check if patient is discharged?
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
 
 
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+        if command == "admit_patient":
+            patient_id_int = input("Please enter patient's id: ")
+            first_name = input("Please enter the patient's first name ")
+            last_name = input("Please enter the patient's last name ")
+            age_int = input("Please enter patient age: ")
+            email = input("Please enter the patient's email ")
+            phone = input("Please enter the patient's phone number ")
+            address = input("Please enter the patient's address: ")
+            surgeryDone_yn = input("If the patent needs surgery, please enter No. Otherwise, enter Yes: ")
+            assigned_room = input("Please enter the patient's assigned room type: ")
+            num_nights_int = input("Please enter the number of nights they will be staying: ")
+            discharged_yn = "No"
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(patient_id_int), first_name, last_name, int(age_int), email, phone, address, surgeryDone_yn, assigned_room, int(num_nights_int),discharged_yn)
+                    print(args)
+                    cursor.callproc('AdmitPatient', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+
+
+
+#LIST OF procs you NEED to implement
+#AdmitPatient
+#generate_prescription
+
+#InsertOrUpdateInsurance
+#AddOrUpdateMedicineInInventory
+#InsertMedication
+#InsertHospitalData
+#InsertPharmacyData
+#InsertRoomData
 
 
 
