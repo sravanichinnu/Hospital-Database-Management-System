@@ -1,31 +1,8 @@
 USE hospital;
 
-ALTER TABLE Patient ADD COLUMN employee_id INT;
-ALTER TABLE Patient ADD COLUMN check_in_time DATETIME;
-ALTER TABLE Patient ADD COLUMN appointment_end_time DATETIME;
-
-CREATE TABLE StaffWorkingHours (
-    employee_id INT PRIMARY KEY NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    
-    FOREIGN KEY (employee_id) REFERENCES Staff(employee_id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-INSERT INTO StaffWorkingHours (employee_id,start_time, end_time) VALUES
-(17001,'08:00:00', '16:00:00'),
-(17002,'09:00:00', '17:00:00'),
-(17003,'10:00:00', '18:00:00'),
-(17004,'11:00:00', '19:00:00'),
-(17005,'12:00:00', '20:00:00'),
-(17006,'13:00:00', '21:00:00'),
-(17007,'14:00:00', '22:00:00'),
-(17008,'15:00:00', '23:00:00'),
-(17009,'16:00:00', '00:00:00'),
-(17010,'17:00:00', '01:00:00');
 
 DELIMITER //
-CREATE PROCEDURE AdmitPatient(
-    IN p_patient_id INT,
+CREATE PROCEDURE admit_patient(
     IN p_first_name VARCHAR(50),
     IN p_last_name VARCHAR(50),
     IN p_age INT,
@@ -55,7 +32,6 @@ BEGIN
     IF available_doctor_id IS NOT NULL THEN
         -- Insert the patient record and assign the available doctor
         INSERT INTO Patient (
-            patient_id,
             first_name,
             last_name,
             age,
@@ -71,7 +47,6 @@ BEGIN
             appointment_end_time
         )
         VALUES (
-            p_patient_id,
             p_first_name,
             p_last_name,
             p_age,
@@ -93,8 +68,7 @@ END;
 //
 DELIMITER ;
 
-CALL AdmitPatient(
-    2015,
+CALL admit_patient(
     'John',
     'Doe',
     35,
@@ -110,20 +84,112 @@ CALL AdmitPatient(
 UPDATE StaffWorkingHours SET end_time = "17:00:00" WHERE employee_id = '17001';
 SELECT * FROM Patient;
 
-# --------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------
-CALL insert_bill_into_cashier(2021);
-SELECT * FROM Medication where patient_id = 2000;
-DROP PROCEDURE insert_bill_into_cashier;
-# --------------------------------------------------------------------------------------------
 SELECT * FROM Insurance;
 SELECT * FROM Cashier;
-SELECT * FROM Medication where patient_id = 2010;
 
+
+# ----------------------------------------------------------------------------------
+# generate prescription
+
+
+DELIMITER $$
+
+CREATE PROCEDURE generate_prescription (
+    IN p_patient_id INT,
+    IN p_medicines TEXT,
+    IN p_dosages TEXT,
+    IN p_times_to_take TEXT
+)
+BEGIN
+	DECLARE v_employee_id INT;
+    DECLARE v_medicine_1 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_medicine_2 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_medicine_3 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_dosage1 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_dosage2 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_dosage3 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_time_to_take_1 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_time_to_take_2 VARCHAR(255) DEFAULT NULL;
+    DECLARE v_time_to_take_3 VARCHAR(255) DEFAULT NULL;
+
+    SET v_medicine_1 = SUBSTRING_INDEX(p_medicines, ',', 1);
+    SET v_medicine_2 = NULL;
+    SET v_medicine_3 = NULL;
+
+    SET v_dosage1 = SUBSTRING_INDEX(p_dosages, ',', 1);
+    SET v_dosage2 = NULL;
+    SET v_dosage3 = NULL;
+
+    SET v_time_to_take_1 = SUBSTRING_INDEX(p_times_to_take, ',', 1);
+    SET v_time_to_take_2 = NULL;
+    SET v_time_to_take_3 = NULL;
+    
+	# employee_id (doctor) that has been assigned to the cuurent medication holder
+    SELECT employee_id INTO v_employee_id
+    FROM Patient
+    WHERE patient_id= p_patient_id;
+    
+	 IF v_employee_id IS NULL THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Error: Can''t generate prescription without patient admission.';
+	END IF;
+
+	IF LENGTH(p_medicines) > 0 THEN
+		SET v_medicine_2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_medicines, ','), ',', 2), ',', -1);
+		IF LENGTH(v_medicine_2) = 0 THEN
+			SET v_medicine_2 = NULL;
+		END IF;
+		IF LENGTH(p_medicines) > LENGTH(CONCAT(v_medicine_1, ',', v_medicine_2)) THEN
+			SET v_medicine_3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_medicines, ',', 3), ',', -1);
+		END IF;
+	END IF;
+
+	IF LENGTH(p_dosages) > 0 THEN
+		SET v_dosage2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_dosages, ','), ',', 2), ',', -1);
+		IF LENGTH(v_dosage2) = 0 THEN
+			SET v_dosage2 = NULL;
+		END IF;
+		IF LENGTH(p_dosages) > LENGTH(CONCAT(v_dosage1, ',', v_dosage2)) THEN
+			SET v_dosage3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_dosages, ',', 3), ',', -1);
+		END IF;
+	END IF;
+
+	IF LENGTH(p_times_to_take) > 0 THEN
+		SET v_time_to_take_2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_times_to_take, ','), ',', 2), ',', -1);
+		IF LENGTH(v_time_to_take_2) = 0 THEN
+			SET v_time_to_take_2 = NULL;
+		END IF;
+		IF LENGTH(p_times_to_take) > LENGTH(CONCAT(v_time_to_take_1, ',', v_time_to_take_2)) THEN
+			SET v_time_to_take_3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_times_to_take, ',', 3), ',', -1);
+		END IF;
+	END IF;
+
+
+
+    INSERT INTO Medication (
+        employee_id, patient_id, medicine_1, medicine_2, medicine_3,
+        dosage1, dosage2, dosage3, time_to_take_1, time_to_take_2, time_to_take_3
+    )
+    VALUES (
+        v_employee_id, p_patient_id,
+        v_medicine_1,v_medicine_2, v_medicine_3,
+        v_dosage1, v_dosage2, v_dosage3,
+        v_time_to_take_1, v_time_to_take_2, v_time_to_take_3
+    );
+END $$
+
+DELIMITER ;
+
+
+CALL generate_prescription(2011,'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
+
+SELECT * FROM Medication;
+
+# ----------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 DELIMITER //
 
-CREATE PROCEDURE insert_bill_into_cashier(IN patient_id INT)
+CREATE PROCEDURE generate_bill(IN patient_id INT)
 BEGIN
   DECLARE v_room_type VARCHAR(255);
   DECLARE v_total_room_cost DECIMAL(10, 2);
@@ -238,9 +304,11 @@ IF NOT EXISTS (
 END //
 
 DELIMITER ;
-
-
-# ----------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+CALL generate_bill(2011);
+SELECT * FROM Cashier;
+# --------------------------------------------------------------------------------------------
+ # -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE `InsertOrUpdateInsurance` (
@@ -328,135 +396,8 @@ SELECT * FROM Inventory;
 
 
 
-# ----------------------------------------------------------------------------------
-# generate prescription
-
-
-DELIMITER $$
-
-CREATE PROCEDURE InsertMedication (
-    IN p_prescription_id INT,
-    IN p_employee_id INT,
-    IN p_patient_id INT,
-    IN p_medicines TEXT,
-    IN p_dosages TEXT,
-    IN p_times_to_take TEXT
-)
-BEGIN
-    DECLARE v_medicine_1 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_medicine_2 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_medicine_3 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_dosage1 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_dosage2 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_dosage3 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_time_to_take_1 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_time_to_take_2 VARCHAR(255) DEFAULT NULL;
-    DECLARE v_time_to_take_3 VARCHAR(255) DEFAULT NULL;
-
-    SET v_medicine_1 = SUBSTRING_INDEX(p_medicines, ',', 1);
-    SET v_medicine_2 = NULL;
-    SET v_medicine_3 = NULL;
-
-    SET v_dosage1 = SUBSTRING_INDEX(p_dosages, ',', 1);
-    SET v_dosage2 = NULL;
-    SET v_dosage3 = NULL;
-
-    SET v_time_to_take_1 = SUBSTRING_INDEX(p_times_to_take, ',', 1);
-    SET v_time_to_take_2 = NULL;
-    SET v_time_to_take_3 = NULL;
-
-	IF LENGTH(p_medicines) > 0 THEN
-		SET v_medicine_2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_medicines, ','), ',', 2), ',', -1);
-		IF LENGTH(v_medicine_2) = 0 THEN
-			SET v_medicine_2 = NULL;
-		END IF;
-		IF LENGTH(p_medicines) > LENGTH(CONCAT(v_medicine_1, ',', v_medicine_2)) THEN
-			SET v_medicine_3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_medicines, ',', 3), ',', -1);
-		END IF;
-	END IF;
-
-	IF LENGTH(p_dosages) > 0 THEN
-		SET v_dosage2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_dosages, ','), ',', 2), ',', -1);
-		IF LENGTH(v_dosage2) = 0 THEN
-			SET v_dosage2 = NULL;
-		END IF;
-		IF LENGTH(p_dosages) > LENGTH(CONCAT(v_dosage1, ',', v_dosage2)) THEN
-			SET v_dosage3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_dosages, ',', 3), ',', -1);
-		END IF;
-	END IF;
-
-	IF LENGTH(p_times_to_take) > 0 THEN
-		SET v_time_to_take_2 = SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(p_times_to_take, ','), ',', 2), ',', -1);
-		IF LENGTH(v_time_to_take_2) = 0 THEN
-			SET v_time_to_take_2 = NULL;
-		END IF;
-		IF LENGTH(p_times_to_take) > LENGTH(CONCAT(v_time_to_take_1, ',', v_time_to_take_2)) THEN
-			SET v_time_to_take_3 = SUBSTRING_INDEX(SUBSTRING_INDEX(p_times_to_take, ',', 3), ',', -1);
-		END IF;
-	END IF;
-
-
-
-    INSERT INTO Medication (
-        prescription_id, employee_id, patient_id, medicine_1, medicine_2, medicine_3,
-        dosage1, dosage2, dosage3, time_to_take_1, time_to_take_2, time_to_take_3
-    )
-    VALUES (
-        p_prescription_id, p_employee_id, p_patient_id,
-        v_medicine_1,v_medicine_2, v_medicine_3,
-        v_dosage1, v_dosage2, v_dosage3,
-        v_time_to_take_1, v_time_to_take_2, v_time_to_take_3
-    );
-END $$
-
-DELIMITER ;
-
-
-CALL InsertMedication(23, 17001, 2021, 'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
-
-SELECT * FROM Medication;
-
 
 # ----------------------------------------------------------------------------------
-# insert staff 
-
-
-DELIMITER //
-CREATE PROCEDURE InsertStaff(
-    IN p_employee_id INT,
-    IN p_branch_id INT,
-    IN p_employee_first_name VARCHAR(255),
-    IN p_employee_last_name VARCHAR(255),
-    IN p_designation VARCHAR(255),
-    IN p_email VARCHAR(255),
-    IN p_phone_no VARCHAR(20),
-    IN p_department_id VARCHAR(255)
-)
-BEGIN
-    INSERT INTO Staff(
-        employee_id,
-        branch_id,
-        employee_first_name,
-        employee_last_name,
-        designation,
-        email,
-        phone_no,
-        department_id
-    )
-    VALUES (
-        p_employee_id,
-        p_branch_id,
-        p_employee_first_name,
-        p_employee_last_name,
-        p_designation,
-        p_email,
-        p_phone_no,
-        p_department_id
-    );
-END //
-DELIMITER ;
-
-CALL InsertStaff(1, 101, 'John', 'Doe', 'Manager', 'john.doe@example.com', '+1234567890', 'HR');
 
 # ----------------------------------------------------------------------------------
 # insert hospital 
@@ -464,39 +405,37 @@ CALL InsertStaff(1, 101, 'John', 'Doe', 'Manager', 'john.doe@example.com', '+123
 DELIMITER //
 CREATE PROCEDURE InsertHospitalData(
     IN p_name VARCHAR(255),
-    IN p_branch_id INT,
     IN p_no_of_employees INT,
     IN p_address VARCHAR(255),
     IN p_visiting_hours VARCHAR(255)
 )
 BEGIN
-  INSERT INTO Hospital (name, branch_id, no_of_employees, address, visiting_hours)
+  INSERT INTO Hospital (name, no_of_employees, address, visiting_hours)
   VALUES
-  (p_name, p_branch_id, p_no_of_employees, p_address, p_visiting_hours);
+  (p_name, p_no_of_employees, p_address, p_visiting_hours);
 END //
 DELIMITER ;
 
-CALL InsertHospitalData('SRK Hospitals', 16001, 15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
-CALL InsertHospitalData('SRK Hospitals', 16002, 15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
+CALL InsertHospitalData('SRK Hospitals',15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
+CALL InsertHospitalData('SRK Hospitals',15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
 
 # ----------------------------------------------------------------------------------
 # insert Pharmacy
 DELIMITER //
 CREATE PROCEDURE InsertPharmacyData(
-    IN p_pharmacy_id INT,
     IN p_branch_id INT,
     IN p_location VARCHAR(255)
 )
 BEGIN
-  INSERT INTO Pharmacy (pharmacy_id, branch_id, location)
+  INSERT INTO Pharmacy (branch_id, location)
   VALUES
-  (p_pharmacy_id, p_branch_id, p_location);
+  (p_branch_id, p_location);
 END //
 DELIMITER ;
 
-CALL InsertPharmacyData(10001, 1, 'New York');
-CALL InsertPharmacyData(10002, 2, 'Los Angeles');
-CALL InsertPharmacyData(10003, 3, 'Chicago');
+CALL InsertPharmacyData(1, 'New York');
+CALL InsertPharmacyData(2, 'Los Angeles');
+CALL InsertPharmacyData(3, 'Chicago');
 
 # ----------------------------------------------------------------------------------
 # insert Room
@@ -537,7 +476,7 @@ END; //
 DELIMITER ;
 
 
-CALL DischargePatient(2021);
+CALL DischargePatient(2011);
 SELECT * from Patient;
 SELECT * FROM Cashier;
 # ----------------------------------------------------------------------------------
@@ -566,7 +505,7 @@ BEGIN
 END; //
 DELIMITER ;
 
-CALL PayBill(2021);
+CALL PayBill(2011);
 
 
 
