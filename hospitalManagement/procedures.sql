@@ -139,7 +139,7 @@ BEGIN
     
     SELECT patient_id INTO v_patient_id
     FROM Patient
-    WHERE patient_id = p_patient_id;give me 15 min
+    WHERE patient_id = p_patient_id;
     
 	IF v_patient_id IS NULL THEN
 		SIGNAL SQLSTATE '45000'
@@ -193,10 +193,11 @@ END $$
 DELIMITER ;
 
 
-CALL generate_prescription(2011,'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
+CALL generate_prescription(2003,'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
 
 SELECT * FROM Medication;
 SELECT * FROM Patient;
+select * from Inventory;
 
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -318,7 +319,7 @@ END //
 
 DELIMITER ;
 
-CALL generate_bill(2010);
+CALL generate_bill(2003);
 SELECT * FROM Cashier;
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -425,7 +426,7 @@ DELIMITER ;
 
 CALL InsertHospitalData('SRK Hospitals',15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
 CALL InsertHospitalData('SRK Hospitals',15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
-
+select * from Hospital;
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # insert Pharmacy
 DELIMITER //
@@ -459,33 +460,6 @@ BEGIN
 END //
 DELIMITER ;
 
--- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Discharge patient
-DELIMITER //
-CREATE PROCEDURE DischargePatient(IN p_patient_id INT)
-BEGIN
-  DECLARE v_final_bill_after_insurance DECIMAL(10, 2);
-
-  SELECT final_bill_after_insurance
-  INTO v_final_bill_after_insurance
-  FROM Cashier
-  WHERE patient_id = p_patient_id;
-
-  IF v_final_bill_after_insurance = 0 THEN
-    UPDATE Patient
-    SET is_discharged = 'Yes'
-    WHERE patient_id = p_patient_id;
-  ELSE
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'The patient has not paid the bill yet.';
-  END IF;
-END; //
-DELIMITER ;
-
-
-CALL DischargePatient(2011);
-SELECT * from Patient;
-SELECT * FROM Cashier;
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # pay bill 
 
@@ -504,7 +478,7 @@ BEGIN
     SET final_bill_after_insurance = 0
     WHERE patient_id = p_patient_id;
 
-    CALL DischargePatient(p_patient_id);
+    -- CALL DischargePatient(p_patient_id);
   ELSE
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'The bill has already been paid.';
@@ -512,7 +486,15 @@ BEGIN
 END; //
 DELIMITER ;
 
-CALL PayBill(2011);
+CALL PayBill(2003);
+select * from Cashier;
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+CALL DischargePatient(2003);
+SELECT * from Patient;
+SELECT * FROM Cashier;
+
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- procedure to insert into the type of room
 DELIMITER $$
@@ -539,7 +521,7 @@ begin
     -- for update is used to lock the selected row until the end of the transaction
     
     if hospital_count is null then
-		signal sqlstate '45000' set message_text = 'Branch id does nto exist';
+		signal sqlstate '45000' set message_text = 'Branch id does not exist';
 	end if;
     
     update Hospital set no_of_employees = no_of_employees + 1 
@@ -548,15 +530,32 @@ begin
 end$$
 delimiter ;
 -- checking for the trigger, trying to insert an employee
-call new_employee(17036, 16002, 'Thor', 'Williams', 'Doctor', 'thor.wi@srk.org', '(645)335-0483', 104);
+call new_employee(16002, 'Thor', 'Williams', 'Doctor', 'thor.wi@srk.org', '(645)335-0483', 104);
 select * from Staff;
 select * from Hospital;
-
+select * from Cashier;
+select * from Patient;
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- trigger to update the discharge status of the patient based on the amount of bill was paid
+delimiter $$
+create trigger update_discharge_status after update on Cashier
+for each row
+begin
+	if new.final_bill_after_insurance = 0 then
+		update Patient set is_discharged = 'yes' where patient_id = new.patient_id;
+	end if;
+end $$
+delimiter ;
+select * from Patient;
+select * from Medication;
 
+select * from Cashier;
+call generate_bill(2004);
+call PayBill(2004);
 
-
-
-
-
-
+select * from Patient;
+select * from Medication;
+SELECT * FROM ROOM;
+select * from inventory;
+select * from Insurance;
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

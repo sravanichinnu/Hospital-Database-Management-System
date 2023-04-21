@@ -526,7 +526,7 @@ call new_department(
 );
 
 select * from Department;
-
+select * from Hospital;
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- procedure to add new employee to the Staff table
@@ -836,7 +836,8 @@ END; //
 DELIMITER ;
 
 CALL PayBill(2001);
-
+select * from Patient;
+select * from Cashier;
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- trigger to increase the count for number of employees present in a hospital after a new employee is inserted 
 delimiter $$
