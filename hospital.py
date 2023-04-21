@@ -42,7 +42,7 @@ with connection:
 
     print("welcome " + username + ", please enter a command")
     command = input("Please enter your cmd: ")
-
+#add in break on misformed commands later
     while command != "quit":
         if command == "new_department":
             depId = input("Please enter the new department id number: ")
@@ -86,7 +86,6 @@ with connection:
 
 
         if command == "new_employee":
-            employee_id_int = input("Please enter employee id: ")
             branch_id_int = input("Please enter the branch id ")
             first_name = input("Please enter the employee's first name ")
             last_name = input("Please enter the employee's last name ")
@@ -98,7 +97,7 @@ with connection:
 
             with connection.cursor() as cursor:
                 try:
-                    args = (int(employee_id_int), int(branch_id_int),first_name,last_name, designation, email, phone, int(department_id_int))
+                    args = ( int(branch_id_int),first_name,last_name, designation, email, phone, int(department_id_int))
                     print(args)
                     cursor.callproc('new_employee', args)
                     connection.commit()
@@ -111,29 +110,42 @@ with connection:
 
                 #finally:
                     #command = input("Please enter your cmd: ")
-                    #break
+                    #breakgenerate_bill
         # checkout (three commands) insert_bill_into_cashier --> PayBill --> Discharge (Discharge is called from Paybill)
-        if command == "checkout":
+        if command == "generate_bill":
             patient_id_int = input("Please enter the patient's id ")
             with connection.cursor() as cursor:
                 try:
-                    args = (int(patient_id_int),)
+                    args = (int(patient_id_int), )
                     print(args)
-                    cursor.callproc('insert_bill_into_cashier', args)
+                    cursor.callproc('generate_bill', args)
                     print("Bill is inserted")
+                    #for debug, check if patient is discharged?
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+
+        if command == "pay_bill":
+            patient_id_int = input("Please enter the patient's id ")
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(patient_id_int), )
+                    print(args)
                     cursor.callproc('PayBill', args)
                     print("Bill is Paid")
                     #for debug, check if patient is discharged?
                     connection.commit()
                     command = input("Please enter your cmd: ")
 
-
                 except Exception as e:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
         if command == "admit_patient":
-            patient_id_int = input("Please enter patient's id: ")
             first_name = input("Please enter the patient's first name ")
             last_name = input("Please enter the patient's last name ")
             age_int = input("Please enter patient age: ")
@@ -147,9 +159,9 @@ with connection:
 
             with connection.cursor() as cursor:
                 try:
-                    args = (int(patient_id_int), first_name, last_name, int(age_int), email, phone, address, surgeryDone_yn, assigned_room, int(num_nights_int),discharged_yn)
+                    args = (first_name, last_name, int(age_int), email, phone, address, surgeryDone_yn, assigned_room, int(num_nights_int),discharged_yn)
                     print(args)
-                    cursor.callproc('AdmitPatient', args)
+                    cursor.callproc('admit_patient', args)
                     connection.commit()
                     command = input("Please enter your cmd: ")
 
@@ -159,15 +171,16 @@ with connection:
                     print("Exeception occured:{}".format(e))
 
         if command == "generate_prescription":
+            print("reminder, split up the prescriptions with commas!")
             patient_id_int = input("Please enter the patient id: ")
-            employee_id_int = input("Please enter id of the employee perscribing: ")
-            medicine_name= input("Please enter name of the medicine: ")
-            dosage = input("Please enter the proper dosage: ")
+            #employee_id_int = input("Please enter id of the employee perscribing: ")
+            medicine_name= input("Please enter name of the medicine, with commas!: ")
+            dosage = input("Please enter the proper dosage, with commas!: ")
             time_to_take = input("Please enter how the instructions on taking this medicine: ")
 
             with connection.cursor() as cursor:
                 try:
-                    args = (int(patient_id_int), int(employee_id_int),medicine_name,dosage, designation, time_to_take)
+                    args = (int(patient_id_int), medicine_name,dosage, time_to_take)
                     print(args)
                     cursor.callproc('generate_prescription', args)
                     connection.commit()
@@ -217,14 +230,92 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
+        if command == "InsertOrUpdateInsurance":
+            #Make sure you change the name of this command to something less clunky
+            insurance_id_int = input("Please enter the insurance id: ")
+            provider = input("Please enter the provider's name: ")
+            plan_type = input("Please enter the patient's healthcare plan: ")
+            coverage = input("Please enter the ammount the health plan covers: ")
+            expery_date = input("Please enter the experation date in the format YYYY-MM-DD: ")
+            patient_id_int = input("Please enter the patient id: ")
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(insurance_id_int), provider, plan_type, float(coverage), expery_date,int(patient_id_int) )
+                    print(args)
+                    cursor.callproc('InsertOrUpdateInsurance', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+        if command == "AddOrUpdateMedicineInInventory":
+            medicine_name = input("Please enter the medicines name: ")
+            insurance_id_float = input("Please enter the price of the medicine: ")
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (medicine_name, float(insurance_id_float) )
+                    print(args)
+                    cursor.callproc('AddOrUpdateMedicineInInventory', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+        if command == "insert_hospital_data":
+            name = input("Please enter the Hospital's name: ")
+            no_of_employees_int = input("Please enter the number of employees: ")
+            address = input("Please enter the address of the hospital: ")
+            visiting_hours = input("Please enter the visiting hours: ")
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (name, int(no_of_employees_int),address,visiting_hours )
+                    print(args)
+                    cursor.callproc('InsertHospitalData', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+        if command == "insert_room_data":
+            name = input("Please enter the room's type: ")
+            cost_per_night = input("Please enter the price for each night: ")
+
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (name, float(no_of_employees_int) )
+                    print(args)
+                    cursor.callproc('InsertRoomData', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+#DELIMITER //
+#CREATE PROCEDURE InsertHospitalData(
+  #  IN p_name VARCHAR(255),
+  #  IN p_no_of_employees INT,
+  #      IN p_room_type VARCHAR(255),
+#     IN p_cost_per_night DECIMAL(10, 2)
+#)
+#BEGIN
 #LIST OF procs you NEED to implement
 #AdmitPatient (done?)
 #generate_prescription (done)
 #InsertOrUpdateInsurance (done)
-
 #AddOrUpdateMedicineInInventory (done)
 
-#InsertMedication
-#InsertHospitalData
-#InsertPharmacyData (unneeded?)
-#InsertRoomData
+#InsertMedication (Done)
+#InsertHospitalData(Done)
+#InsertRoomData(done)
