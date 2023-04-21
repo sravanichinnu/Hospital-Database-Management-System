@@ -14,32 +14,8 @@ try:
                              cursorclass=pymysql.cursors.DictCursor)
 except:
     print("Error while connecting to MySQL")
-#do you need port22? figure out.
+
 with connection:
-
-    with connection.cursor() as cursor:
-    # Create a new record
-        sql = "INSERT INTO `Inventory` (`medicine_name`, `cost`) VALUES (%s, %s)"
-        cursor.execute(sql, ('AaTest', '100.00'))
-    # connection is not autocommit by default. So you must commit to save your changes.
-    connection.commit()
-
-    with connection.cursor() as cursor:
-        # Read a single record
-        sql = "SELECT `medicine_name`, `cost` FROM `Inventory` WHERE `medicine_name`=%s"
-        cursor.execute(sql, ('AaTest',))
-    result = cursor.fetchone()
-    connection.commit()
-    print(result)
-
-    with connection.cursor() as cursor:
-        # Read a single record
-        sql = "DELETE FROM `hospital`.`Inventory` WHERE `medicine_name` =%s"
-        cursor.execute(sql, ('AaTest',))
-    result = cursor.fetchone()
-    connection.commit()
-    print("deleted")
-
 
     print("welcome " + username + ", please enter a command")
     command = input("Please enter your cmd: ")
@@ -69,9 +45,6 @@ with connection:
                 #finally:
                     #command = input("Please enter your cmd: ")
                     #break
-
-
-
 
         elif command == "new_employee":
             branch_id_int = input("Please enter the branch id ")
@@ -177,7 +150,7 @@ with connection:
                     print("Exeception occured:{}".format(e))
 
 
-        elif command == "AddOrUpdateMedicineInInventory":
+        elif command == "insert_update_medicine":
             #Make sure you change the name of this command to something less clunky
 
             medicine_name= input("Please enter name of the medicine: ")
@@ -194,13 +167,14 @@ with connection:
                 except Exception as e:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
+
         elif command == "insert_update_insurance":
             #Make sure you change the name of this command to something less clunky
             insurance_id_int = input("Please enter the insurance id: ")
             provider = input("Please enter the provider's name: ")
             plan_type = input("Please enter the patient's healthcare plan: ")
-            coverage = input("Please enter the ammount the health plan covers: ")
-            expery_date = input("Please enter the experation date in the format YYYY-MM-DD: ")
+            coverage = input("Please enter the amount the health plan covers: ")
+            expery_date = input("Please enter the expiration date in the format YYYY-MM-DD: ")
             patient_id_int = input("Please enter the patient id: ")
 
             with connection.cursor() as cursor:
@@ -215,42 +189,6 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        elif command == "InsertOrUpdateInsurance":
-            #Make sure you change the name of this command to something less clunky
-            insurance_id_int = input("Please enter the insurance id: ")
-            provider = input("Please enter the provider's name: ")
-            plan_type = input("Please enter the patient's healthcare plan: ")
-            coverage = input("Please enter the ammount the health plan covers: ")
-            expery_date = input("Please enter the experation date in the format YYYY-MM-DD: ")
-            patient_id_int = input("Please enter the patient id: ")
-
-            with connection.cursor() as cursor:
-                try:
-                    args = (int(insurance_id_int), provider, plan_type, float(coverage), expery_date,int(patient_id_int) )
-                    print(args)
-                    cursor.callproc('InsertOrUpdateInsurance', args)
-                    connection.commit()
-                    command = input("Please enter your cmd: ")
-
-                except Exception as e:
-                    traceback.print_exc()
-                    print("Exeception occured:{}".format(e))
-
-        elif command == "AddOrUpdateMedicineInInventory":
-            medicine_name = input("Please enter the medicines name: ")
-            insurance_id_float = input("Please enter the price of the medicine: ")
-
-            with connection.cursor() as cursor:
-                try:
-                    args = (medicine_name, float(insurance_id_float) )
-                    print(args)
-                    cursor.callproc('AddOrUpdateMedicineInInventory', args)
-                    connection.commit()
-                    command = input("Please enter your cmd: ")
-
-                except Exception as e:
-                    traceback.print_exc()
-                    print("Exeception occured:{}".format(e))
 
         elif command == "insert_hospital_data":
             name = input("Please enter the Hospital's name: ")
@@ -290,3 +228,4 @@ with connection:
         command = input("Something went wrong, please enter in your query again: ")
 
 
+#make readme(python), document-, flowchart; meet at 4
