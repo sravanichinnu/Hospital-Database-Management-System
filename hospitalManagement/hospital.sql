@@ -64,17 +64,6 @@ CREATE TABLE Patient (
 ALTER TABLE Patient AUTO_INCREMENT = 2000;
 
 
-CREATE TABLE Appointment (
-  appointment_id INT PRIMARY KEY,
-  patient_id INT,
-  branch_id INT,
-  staff_id INT,
-  appointment_date DATE,
-  appointment_time TIME,
-  FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
-  FOREIGN KEY (branch_id) REFERENCES Hospital(branch_id),
-  FOREIGN KEY (staff_id) REFERENCES Staff(employee_id)
-);
 
 
 CREATE TABLE Insurance (
@@ -170,19 +159,6 @@ VALUES ('General ward', 150.00),
        ('Private ward', 400.00),
        ('Premium Deluxe', 900.00);
        
-INSERT INTO Patient (patient_id, first_name, last_name, age, email, phone, address, surgery_done, assigned_room, no_of_nights, is_discharged) VALUES
-(2000, 'Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'Yes', 'General ward', 3, 'Yes'),
-(2001, 'Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'No', 'Private ward', 7, 'No'),
-(2002, 'Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes'),
-(2003, 'James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia', 'No', 'General ward', 4, 'No'),
-(2004, 'Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA', 'Yes', 'Private ward', 9, 'Yes'),
-(2005, 'James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia', 'No', 'Premium Deluxe', 2, 'No'),
-(2006, 'Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'Yes', 'General ward', 10, 'Yes'),
-(2007, 'Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia', 'No', 'Private ward', 8, 'No'),
-(2008, 'Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA', 'Yes', 'Premium Deluxe', 6, 'Yes'),
-(2009, 'Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'No', 'General ward', 1, 'No'),
-(2010, 'Oliver', 'James', 23, 'oliver@gmail.com', '(857)455-3954', '2101 Elm St, Boston, MA', 'Yes', 'Private ward', 5, 'Yes');
-
 
 INSERT INTO Staff (employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id)
 VALUES (17001, 16001, 'Markus', 'Brown', 'Doctor', 'markus.br@srk.org', '(857)324-6758', 101),
@@ -217,20 +193,7 @@ VALUES (17001, 16001, 'Markus', 'Brown', 'Doctor', 'markus.br@srk.org', '(857)32
        (17030, 16001, 'Hae', 'Soo', 'Doctor', 'hae.so@srk.org', '(857)239-9083', 107),
        (17031, 16002, 'Li', 'Chang', 'Doctor', 'li.ch@srk.org', '(617)247-0909', 107);
        
-INSERT INTO Appointment (appointment_id, patient_id, branch_id, staff_id, appointment_date, appointment_time)
-VALUES
-  (1, 2000, 16001, 17001, '2023-04-02', '11:15:00'),
-  (2, 2001, 16001, 17002, '2023-04-02', '12:00:00'),
-  (3, 2002, 16001, 17003, '2023-04-03', '12:30:00'),
-  (4, 2003, 16002, 17011, '2023-04-03', '13:00:00'),
-  (5, 2004, 16001, 17004, '2023-04-04', '10:00:00'),
-  (6, 2005, 16002, 17012, '2023-04-04', '10:30:00'),
-  (7, 2006, 16002, 17013, '2023-04-04', '13:00:00'),
-  (8, 2007, 16002, 17014, '2023-04-05', '11:30:00'),
-  (9, 2008, 16002, 17027, '2023-04-10', '10:15:00'),
-  (10, 2009, 16002, 17024, '2023-04-10', '10:45:00'),
-  (11, 2010, 16002, 17028, '2023-04-10', '11:00:00');
-  
+
 INSERT INTO Inventory (medicine_name, cost)
 VALUES
 ('Advil', 19.99),
@@ -279,18 +242,38 @@ INSERT INTO Insurance (insurance_id, provider, plan_type, coverage, expiry_date,
 (60006, 'SecureHealth', 'Gold', 7500.00, '2024-12-31', 2003),
 (60007, 'SecureHealth', 'Gold', 7500.00, '2024-12-31', 2000);
 
-INSERT INTO StaffWorkingHours (employee_id,start_time, end_time) VALUES
-(17001,'08:00:00', '16:00:00'),
-(17002,'09:00:00', '17:00:00'),
-(17003,'10:00:00', '18:00:00'),
-(17004,'11:00:00', '19:00:00'),
-(17005,'12:00:00', '20:00:00'),
-(17006,'13:00:00', '21:00:00'),
-(17007,'14:00:00', '22:00:00'),
-(17008,'15:00:00', '23:00:00'),
-(17009,'16:00:00', '00:00:00'),
-(17010,'17:00:00', '01:00:00');
-
+INSERT INTO StaffWorkingHours (employee_id, start_time, end_time) VALUES
+(17001, '08:00:00', '16:00:00'),
+(17002, '09:00:00', '17:00:00'),
+(17003, '10:00:00', '18:00:00'),
+(17004, '11:00:00', '19:00:00'),
+(17005, '12:00:00', '20:00:00'),
+(17006, '13:00:00', '21:00:00'),
+(17007, '14:00:00', '22:00:00'),
+(17008, '15:00:00', '23:00:00'),
+(17009, '16:00:00', '00:00:00'),
+(17010, '17:00:00', '01:00:00'),
+(17011, '08:00:00', '16:00:00'),
+(17012, '09:00:00', '17:00:00'),
+(17013, '10:00:00', '18:00:00'),
+(17014, '11:00:00', '19:00:00'),
+(17015, '12:00:00', '20:00:00'),
+(17016, '13:00:00', '21:00:00'),
+(17017, '14:00:00', '22:00:00'),
+(17018, '15:00:00', '23:00:00'),
+(17019, '16:00:00', '00:00:00'),
+(17020, '17:00:00', '01:00:00'),
+(17021, '08:00:00', '16:00:00'),
+(17022, '09:00:00', '17:00:00'),
+(17023, '10:00:00', '18:00:00'),
+(17024, '11:00:00', '19:00:00'),
+(17025, '12:00:00', '20:00:00'),
+(17026, '13:00:00', '21:00:00'),
+(17027, '14:00:00', '22:00:00'),
+(17028, '15:00:00', '23:00:00'),
+(17029, '16:00:00', '00:00:00'),
+(17030, '17:00:00', '01:00:00'),
+(17031, '08:00:00', '16:00:00');
 
 
 
