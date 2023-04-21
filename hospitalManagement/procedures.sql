@@ -1,6 +1,24 @@
 USE hospital;
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- procedure to add new employee to the Staff table
+delimiter $$
+create procedure new_employee(
+    in branch_id_p int, 
+    in first_name_p varchar(50), 
+    in last_name_p varchar(50), 
+    in designation_p varchar(10), 
+    in email_p varchar(100), 
+    in phone_p varchar(15),
+    in department_id_p int
+) 
+begin
+	insert into Staff(branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id) 
+    values(branch_id_p, first_name_p, last_name_p, designation_p, email_p, phone_p, department_id_p);
+end$$
+delimiter ;
 
-
+select * from Staff;
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 CREATE PROCEDURE admit_patient(
     IN p_first_name VARCHAR(50),
@@ -68,30 +86,24 @@ END;
 //
 DELIMITER ;
 
-CALL admit_patient(
-    'John',
-    'Doe',
-    35,
-    'john.doe@example.com',
-    '+1-555-123-4567',
-    '123 Main St, Anytown, USA',
-    'No',
-    'General ward',
-    3,
-    'No'
-);
+CALL admit_patient('Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'Yes', 'General ward', 3, 'Yes');
+CALL admit_patient('Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'No', 'Private ward', 7, 'No');
+CALL admit_patient('Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes');
+CALL admit_patient('James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia', 'No', 'General ward', 4, 'No');
+CALL admit_patient('Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA', 'Yes', 'Private ward', 9, 'Yes');
+CALL admit_patient('James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia', 'No', 'Premium Deluxe', 2, 'No');
+CALL admit_patient('Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'Yes', 'General ward', 10, 'Yes');
+CALL admit_patient('Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia', 'No', 'Private ward', 8, 'No');
+CALL admit_patient('Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA', 'Yes', 'Premium Deluxe', 6, 'Yes');
+CALL admit_patient('Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'No', 'General ward', 1, 'No');
 
-UPDATE StaffWorkingHours SET end_time = "17:00:00" WHERE employee_id = '17001';
 SELECT * FROM Patient;
-
 SELECT * FROM Insurance;
 SELECT * FROM Cashier;
 
 
-# ----------------------------------------------------------------------------------
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # generate prescription
-
-
 DELIMITER $$
 
 CREATE PROCEDURE generate_prescription (
@@ -102,6 +114,7 @@ CREATE PROCEDURE generate_prescription (
 )
 BEGIN
 	DECLARE v_employee_id INT;
+    DECLARE v_patient_id INT;
     DECLARE v_medicine_1 VARCHAR(255) DEFAULT NULL;
     DECLARE v_medicine_2 VARCHAR(255) DEFAULT NULL;
     DECLARE v_medicine_3 VARCHAR(255) DEFAULT NULL;
@@ -129,7 +142,11 @@ BEGIN
     FROM Patient
     WHERE patient_id= p_patient_id;
     
-	 IF v_employee_id IS NULL THEN
+    SELECT patient_id INTO v_patient_id
+    FROM Patient
+    WHERE patient_id = p_patient_id;give me 15 min
+    
+	IF v_patient_id IS NULL THEN
 		SIGNAL SQLSTATE '45000'
 			SET MESSAGE_TEXT = 'Error: Can''t generate prescription without patient admission.';
 	END IF;
@@ -184,9 +201,10 @@ DELIMITER ;
 CALL generate_prescription(2011,'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
 
 SELECT * FROM Medication;
+SELECT * FROM Patient;
 
-# ----------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
+
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 
 CREATE PROCEDURE generate_bill(IN patient_id INT)
@@ -304,11 +322,11 @@ IF NOT EXISTS (
 END //
 
 DELIMITER ;
-# --------------------------------------------------------------------------------------------
-CALL generate_bill(2011);
+
+CALL generate_bill(2010);
 SELECT * FROM Cashier;
-# --------------------------------------------------------------------------------------------
- # -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE `InsertOrUpdateInsurance` (
@@ -361,8 +379,8 @@ CALL InsertOrUpdateInsurance(60007, 'Provider Name', 'Plan Type', 8000.00, '2024
 
 SELECT * FROM insurance;
 
-# ----------------------------------------------------------------------------------
-# Add medicine and its cost to Inventory (stock)
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Add medicine and its cost to Inventory (stock)
 DELIMITER $$
 
 CREATE PROCEDURE `AddOrUpdateMedicineInInventory` (
@@ -393,14 +411,8 @@ DELIMITER ;
 
 CALL AddOrUpdateMedicineInInventory('Advil', 20.99);
 SELECT * FROM Inventory;
-
-
-
-
-# ----------------------------------------------------------------------------------
-
-# ----------------------------------------------------------------------------------
-# insert hospital 
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- insert hospital data
 
 DELIMITER //
 CREATE PROCEDURE InsertHospitalData(
@@ -419,7 +431,7 @@ DELIMITER ;
 CALL InsertHospitalData('SRK Hospitals',15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
 CALL InsertHospitalData('SRK Hospitals',15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
 
-# ----------------------------------------------------------------------------------
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # insert Pharmacy
 DELIMITER //
 CREATE PROCEDURE InsertPharmacyData(
@@ -433,11 +445,11 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL InsertPharmacyData(1, 'New York');
-CALL InsertPharmacyData(2, 'Los Angeles');
-CALL InsertPharmacyData(3, 'Chicago');
+select * from Hospital;
+call InsertPharmacyData(16003, 'Virginia');
+select * from Pharmacy;
 
-# ----------------------------------------------------------------------------------
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # insert Room
 
 DELIMITER //
@@ -452,8 +464,8 @@ BEGIN
 END //
 DELIMITER ;
 
-# ----------------------------------------------------------------------------------
-# Discharge patient
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Discharge patient
 DELIMITER //
 CREATE PROCEDURE DischargePatient(IN p_patient_id INT)
 BEGIN
@@ -479,7 +491,7 @@ DELIMITER ;
 CALL DischargePatient(2011);
 SELECT * from Patient;
 SELECT * FROM Cashier;
-# ----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # pay bill 
 
 DELIMITER //
@@ -506,9 +518,46 @@ END; //
 DELIMITER ;
 
 CALL PayBill(2011);
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- procedure to insert into the type of room
+DELIMITER $$
+CREATE PROCEDURE InsertRoomData(
+    IN p_room_type VARCHAR(255),
+    IN p_cost_per_night DECIMAL(10, 2)
+)
+BEGIN
+  INSERT INTO Room (room_type, cost_per_night)
+  VALUES
+  (p_room_type, p_cost_per_night);
+END $$
+DELIMITER ;
 
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- trigger to increase the count for number of employees present in a hospital after a new employee is inserted 
+delimiter $$
+create trigger increase_employee_count after insert on Staff
+for each row
+begin
+	declare hospital_count int;
+    select no_of_employees into hospital_count from Hospital
+    where branch_id = new.branch_id for update;
+    -- for update is used to lock the selected row until the end of the transaction
+    
+    if hospital_count is null then
+		signal sqlstate '45000' set message_text = 'Branch id does nto exist';
+	end if;
+    
+    update Hospital set no_of_employees = no_of_employees + 1 
+    where branch_id = new.branch_id;
+    
+end$$
+delimiter ;
+-- checking for the trigger, trying to insert an employee
+call new_employee(17036, 16002, 'Thor', 'Williams', 'Doctor', 'thor.wi@srk.org', '(645)335-0483', 104);
+select * from Staff;
+select * from Hospital;
 
-
+-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
