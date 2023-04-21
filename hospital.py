@@ -1,4 +1,3 @@
-
 import pymysql.cursors
 import traceback
 
@@ -115,10 +114,10 @@ with connection:
                     #break
         # checkout (three commands) insert_bill_into_cashier --> PayBill --> Discharge (Discharge is called from Paybill)
         if command == "checkout":
-            patient_id_int = input("Please enter the department id ")
+            patient_id_int = input("Please enter the patient's id ")
             with connection.cursor() as cursor:
                 try:
-                    args = (int(patient_id_int))
+                    args = (int(patient_id_int),)
                     print(args)
                     cursor.callproc('insert_bill_into_cashier', args)
                     print("Bill is inserted")
@@ -159,18 +158,54 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
+        if command == "generate_prescription":
+            patient_id_int = input("Please enter the patient id: ")
+            employee_id_int = input("Please enter id of the employee perscribing: ")
+            medicine_name= input("Please enter name of the medicine: ")
+            dosage = input("Please enter the proper dosage: ")
+            time_to_take = input("Please enter how the instructions on taking this medicine: ")
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(patient_id_int), int(employee_id_int),medicine_name,dosage, designation, time_to_take)
+                    print(args)
+                    cursor.callproc('generate_prescription', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
+
+
+        if command == "AddOrUpdateMedicineInInventory":
+            #Make sure you change the name of this command to something less clunky
+
+            medicine_name= input("Please enter name of the medicine: ")
+            cost = input("Please enter the cost of the medicine: ")
+
+            with connection.cursor() as cursor:
+                try:
+                    args = (medicine_name, float(cost))
+                    print(args)
+                    cursor.callproc('AddOrUpdateMedicineInInventory', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
 
 
 
 #LIST OF procs you NEED to implement
-#AdmitPatient
-#generate_prescription
-
+#AdmitPatient (done?)
+#generate_prescription (done)
 #InsertOrUpdateInsurance
-#AddOrUpdateMedicineInInventory
+
+#AddOrUpdateMedicineInInventory (done)
 #InsertMedication
 #InsertHospitalData
 #InsertPharmacyData
 #InsertRoomData
-
 
