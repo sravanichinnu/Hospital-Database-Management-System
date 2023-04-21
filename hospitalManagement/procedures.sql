@@ -90,12 +90,7 @@ CALL admit_patient('Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970'
 CALL admit_patient('Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'No', 'Private ward', 7, 'No');
 CALL admit_patient('Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes');
 CALL admit_patient('James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia', 'No', 'General ward', 4, 'No');
-CALL admit_patient('Charles', 'Simon', 34, 'simonc@yahoo.com', '(857)469-0980', '333 Pine St, Boston, MA', 'Yes', 'Private ward', 9, 'Yes');
-CALL admit_patient('James', 'Mitchel', 22, 'jamesmitchell@gmail.com', '(857)846-0987', '812 Willow St, Virginia', 'No', 'Premium Deluxe', 2, 'No');
-CALL admit_patient('Ye', 'Lee', 32, 'yelee@yahoo.com', '(617)235-6748', '1234 Birch St, Boston, MA', 'Yes', 'General ward', 10, 'Yes');
-CALL admit_patient('Ji', 'Chang', 25, 'changji@gmail.com', '(754)947-9370', '1501 Maple St, Virginia', 'No', 'Private ward', 8, 'No');
-CALL admit_patient('Jace', 'Green', 57, 'greenjace@yahoo.com', '(857)548-0490', '1701 Cedar St, Boston, MA', 'Yes', 'Premium Deluxe', 6, 'Yes');
-CALL admit_patient('Robert', 'Patricks', 34, 'robert34@gmail.com', '(723)947-9947', '1950 Oak St, Virginia', 'No', 'General ward', 1, 'No');
+
 
 SELECT * FROM Patient;
 SELECT * FROM Insurance;
