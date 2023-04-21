@@ -1,3 +1,4 @@
+
 import pymysql.cursors
 import traceback
 
@@ -117,7 +118,7 @@ with connection:
             patient_id_int = input("Please enter the department id ")
             with connection.cursor() as cursor:
                 try:
-                    args = (int(employee_id_int))
+                    args = (int(patient_id_int))
                     print(args)
                     cursor.callproc('insert_bill_into_cashier', args)
                     print("Bill is inserted")
@@ -171,6 +172,5 @@ with connection:
 #InsertHospitalData
 #InsertPharmacyData
 #InsertRoomData
-
 
 
