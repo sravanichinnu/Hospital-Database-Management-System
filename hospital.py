@@ -196,16 +196,35 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
+        if command == "InsertOrUpdateInsurance":
+            #Make sure you change the name of this command to something less clunky
+            insurance_id_int = input("Please enter the insurance id: ")
+            provider = input("Please enter the provider's name: ")
+            plan_type = input("Please enter the patient's healthcare plan: ")
+            coverage = input("Please enter the ammount the health plan covers: ")
+            expery_date = input("Please enter the experation date in the format YYYY-MM-DD: ")
+            patient_id_int = input("Please enter the patient id: ")
 
+            with connection.cursor() as cursor:
+                try:
+                    args = (int(insurance_id_int), provider, plan_type, float(coverage), expery_date,int(patient_id_int) )
+                    print(args)
+                    cursor.callproc('InsertOrUpdateInsurance', args)
+                    connection.commit()
+                    command = input("Please enter your cmd: ")
+
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Exeception occured:{}".format(e))
 
 #LIST OF procs you NEED to implement
 #AdmitPatient (done?)
 #generate_prescription (done)
-#InsertOrUpdateInsurance
+#InsertOrUpdateInsurance (done)
 
 #AddOrUpdateMedicineInInventory (done)
+
 #InsertMedication
 #InsertHospitalData
-#InsertPharmacyData
+#InsertPharmacyData (unneeded?)
 #InsertRoomData
-
