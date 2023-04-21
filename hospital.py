@@ -1,4 +1,5 @@
 import pymysql.cursors
+
 import traceback
 
 # Connect to the database
@@ -42,7 +43,7 @@ with connection:
 
     print("welcome " + username + ", please enter a command")
     command = input("Please enter your cmd: ")
-#add in break on misformed commands later
+
     while command != "quit":
         if command == "new_department":
             depId = input("Please enter the new department id number: ")
@@ -52,26 +53,13 @@ with connection:
                 try:
                     args = (int(depId), depName, )
                     print(args)
-
                     # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
                     # print (newdep)
                     cursor.callproc('new_department', args)
-                    # call new_department(109,'Pulmonology');
-                    # newdep = 'call new_department(%d,%s)' % ( int(depId),depName)
-                    # sql = "call new_department(%d,%s)"
-                    # sql = "call new_department(%d,'test')"
-                    # cursor.execute(sql, (int(depId)))
-
-                    #sql = "SELECT `department_id`, `name` FROM `Department` WHERE `department_id`=%d"
-                    #cursor.execute(sql, (110,))
-
-                    #result = cursor.fetchone()
-                    # connection.commit()
-                    #print(result)
                     connection.commit()
                     command = input("Please enter your cmd: ")
 
-                    # cursor.callproc()
+                # cursor.callproc()
                 # Print the result of the executed stored procedure
 
                 except Exception as e:
@@ -85,7 +73,7 @@ with connection:
 
 
 
-        if command == "new_employee":
+        elif command == "new_employee":
             branch_id_int = input("Please enter the branch id ")
             first_name = input("Please enter the employee's first name ")
             last_name = input("Please enter the employee's last name ")
@@ -110,9 +98,9 @@ with connection:
 
                 #finally:
                     #command = input("Please enter your cmd: ")
-                    #breakgenerate_bill
+
         # checkout (three commands) insert_bill_into_cashier --> PayBill --> Discharge (Discharge is called from Paybill)
-        if command == "generate_bill":
+        elif command == "generate_bill":
             patient_id_int = input("Please enter the patient's id ")
             with connection.cursor() as cursor:
                 try:
@@ -129,7 +117,7 @@ with connection:
                     print("Exeception occured:{}".format(e))
 
 
-        if command == "pay_bill":
+        elif command == "pay_bill":
             patient_id_int = input("Please enter the patient's id ")
             with connection.cursor() as cursor:
                 try:
@@ -137,7 +125,6 @@ with connection:
                     print(args)
                     cursor.callproc('PayBill', args)
                     print("Bill is Paid")
-                    #for debug, check if patient is discharged?
                     connection.commit()
                     command = input("Please enter your cmd: ")
 
@@ -145,7 +132,7 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "admit_patient":
+        elif command == "admit_patient":
             first_name = input("Please enter the patient's first name ")
             last_name = input("Please enter the patient's last name ")
             age_int = input("Please enter patient age: ")
@@ -170,10 +157,9 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "generate_prescription":
+        elif command == "generate_prescription":
             print("reminder, split up the prescriptions with commas!")
             patient_id_int = input("Please enter the patient id: ")
-            #employee_id_int = input("Please enter id of the employee perscribing: ")
             medicine_name= input("Please enter name of the medicine, with commas!: ")
             dosage = input("Please enter the proper dosage, with commas!: ")
             time_to_take = input("Please enter how the instructions on taking this medicine: ")
@@ -191,7 +177,7 @@ with connection:
                     print("Exeception occured:{}".format(e))
 
 
-        if command == "AddOrUpdateMedicineInInventory":
+        elif command == "AddOrUpdateMedicineInInventory":
             #Make sure you change the name of this command to something less clunky
 
             medicine_name= input("Please enter name of the medicine: ")
@@ -208,8 +194,7 @@ with connection:
                 except Exception as e:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
-
-        if command == "InsertOrUpdateInsurance":
+        elif command == "insert_update_insurance":
             #Make sure you change the name of this command to something less clunky
             insurance_id_int = input("Please enter the insurance id: ")
             provider = input("Please enter the provider's name: ")
@@ -230,7 +215,7 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "InsertOrUpdateInsurance":
+        elif command == "InsertOrUpdateInsurance":
             #Make sure you change the name of this command to something less clunky
             insurance_id_int = input("Please enter the insurance id: ")
             provider = input("Please enter the provider's name: ")
@@ -251,7 +236,7 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "AddOrUpdateMedicineInInventory":
+        elif command == "AddOrUpdateMedicineInInventory":
             medicine_name = input("Please enter the medicines name: ")
             insurance_id_float = input("Please enter the price of the medicine: ")
 
@@ -267,7 +252,7 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "insert_hospital_data":
+        elif command == "insert_hospital_data":
             name = input("Please enter the Hospital's name: ")
             no_of_employees_int = input("Please enter the number of employees: ")
             address = input("Please enter the address of the hospital: ")
@@ -285,7 +270,7 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-        if command == "insert_room_data":
+        elif command == "insert_room_data":
             name = input("Please enter the room's type: ")
             cost_per_night = input("Please enter the price for each night: ")
 
@@ -302,20 +287,6 @@ with connection:
                     traceback.print_exc()
                     print("Exeception occured:{}".format(e))
 
-#DELIMITER //
-#CREATE PROCEDURE InsertHospitalData(
-  #  IN p_name VARCHAR(255),
-  #  IN p_no_of_employees INT,
-  #      IN p_room_type VARCHAR(255),
-#     IN p_cost_per_night DECIMAL(10, 2)
-#)
-#BEGIN
-#LIST OF procs you NEED to implement
-#AdmitPatient (done?)
-#generate_prescription (done)
-#InsertOrUpdateInsurance (done)
-#AddOrUpdateMedicineInInventory (done)
+        command = input("Something went wrong, please enter in your query again: ")
 
-#InsertMedication (Done)
-#InsertHospitalData(Done)
-#InsertRoomData(done)
+
