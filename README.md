@@ -53,4 +53,3 @@ The Hospital Database Management System uses the following database schema:
 ·	Medication (prescription_id, employee_id, patient_id, medicin_1, medicine_2, medicine_3, dosage1, dosage2, dosage3, time_to_take_1,    time_to_take_2, time_to_take_3)
 ·	Cashier (bill_id, bill_amount, patient_id, room_type, total_room_cost, surgery_fee, medicine_costs, DateTime, coverage, final_bill_after_insurance)
 ·	MedicationCashier (prescription_id, bill_id)
-![image](https://user-images.githubusercontent.com/24190994/233788816-434548b5-e66a-4207-a40e-e68554608837.png)
