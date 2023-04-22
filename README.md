@@ -43,13 +43,23 @@ The available commands once running the application are:
 Database Schema:
 The Hospital Database Management System uses the following database schema:
 ·	Hospital table (name, branch_id, no_of_employees, address, visiting_hours)
+
 ·	Department table (department_id, name)
+
 ·	Staff table (employee_id, branch_id, employee_first_name, employee_last_name, designation, email, phone_no, department_id)
+
 ·	StaffWorkingHours table (employee_id, start_time, end_time)
+
 ·	Room (room_type, cost_per_night)
+
 ·	Patient (patient_id, first_name, last_name, age, email, phone, address, surgery_done, assigned_room, no_of_nights, is_discharged, employee_id, check_in_time, appointment_end_time)
+
 ·	Insurance (insurance_id, provider, plan_type, coverage, expiry_date, patient_id)
+
 ·	Inventory (medicine_name, cost)
+
 ·	Medication (prescription_id, employee_id, patient_id, medicin_1, medicine_2, medicine_3, dosage1, dosage2, dosage3, time_to_take_1,    time_to_take_2, time_to_take_3)
+
 ·	Cashier (bill_id, bill_amount, patient_id, room_type, total_room_cost, surgery_fee, medicine_costs, DateTime, coverage, final_bill_after_insurance)
+
 ·	MedicationCashier (prescription_id, bill_id)
