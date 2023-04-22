@@ -4,15 +4,20 @@ In today’s world, hospitals generate a vast amount of data every day. Efficien
 This report provides a detailed description of the database’s architecture, the design choices made, and an evaluation of the system’s performance. The report also includes a user manual and instructions for installation of the required software.
 
 Hardware requirements: 
+
 ·	Intel Core i5 or higher or OS X 10.9 or higher
 ·	RAM: 4GB or higher
 ·	Storage: 100GB or higher
+
 Software requirements:
+
 ·	Operating System: Windows 10 or Mac OS X or higher
 ·	Database Management System: MySQL 8.0 or other
 ·	Programming Language: Python 3.8 or higher
 ·	Python libraries: pymysql to connect with the database.
+
 Installation Instructions:
+
 To install and set up the Hospital Database Management System, please follow these steps:
 1.	Download the software required from the official website.
 2.	Install MySQL 8.0 or higher on your computer.
@@ -20,6 +25,7 @@ To install and set up the Hospital Database Management System, please follow the
 4.	Install Python 3.8 or higher on your computer.
 5.	Install the required Python packages.
 6.	Run the application using the command “python hospital.py”.
+
 Commands Available:
 The available commands once running the application are:
 ·	new_department
