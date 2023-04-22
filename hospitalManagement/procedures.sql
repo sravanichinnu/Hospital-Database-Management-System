@@ -86,17 +86,6 @@ END;
 //
 DELIMITER ;
 
-CALL admit_patient('Johnny', 'Ling', 25, 'johnnylang@gmail.com', '(234)347-8970', '123 Main St, Boston, MA', 'Yes', 'General ward', 3, 'Yes');
-CALL admit_patient('Simphon', 'Everest', 64, 'simphon78@gmail.com', '(617)346-9349', '456 Oak St, Virginia', 'No', 'Private ward', 7, 'No');
-CALL admit_patient('Erik', 'Douglas', 45, 'erik33@gmai.com', '(857)546-4568', '789 Park Ave, Boston, MA', 'Yes', 'Premium Deluxe', 5, 'Yes');
-CALL admit_patient('James', 'Thompson', 18, 'jamesthom@yahoo.com', '(647)648-0948', '1201 Elm St, Virginia', 'No', 'General ward', 4, 'No');
-
-
-SELECT * FROM Patient;
-SELECT * FROM Insurance;
-SELECT * FROM Cashier;
-
-
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # generate prescription
 DELIMITER $$
@@ -191,15 +180,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
-CALL generate_prescription(2003,'Lisinopril,Furosemide,Metformin', '500 mg,25 mg,20 mg', 'once daily,twice daily,once daily');
-
-SELECT * FROM Medication;
-SELECT * FROM Patient;
-select * from Inventory;
-
-
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 
@@ -319,9 +299,6 @@ END //
 
 DELIMITER ;
 
-CALL generate_bill(2003);
-SELECT * FROM Cashier;
-
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
 
@@ -371,9 +348,6 @@ END $$
 
 DELIMITER ;
 
-CALL InsertOrUpdateInsurance(60007, 'Provider Name', 'Plan Type', 8000.00, '2024-04-18', 2000);
-
-SELECT * FROM insurance;
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Add medicine and its cost to Inventory (stock)
@@ -404,9 +378,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-CALL AddOrUpdateMedicineInInventory('Advil', 20.99);
-SELECT * FROM Inventory;
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- insert hospital data
 
@@ -424,26 +395,7 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL InsertHospitalData('SRK Hospitals',15, 'Bennington Street, Boston, MA', '11:00:00 - 18:00:00');
-CALL InsertHospitalData('SRK Hospitals',15, 'Alverton St, Virginia', '12:00:00 - 18:00:00');
-select * from Hospital;
--- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# insert Pharmacy
-DELIMITER //
-CREATE PROCEDURE InsertPharmacyData(
-    IN p_branch_id INT,
-    IN p_location VARCHAR(255)
-)
-BEGIN
-  INSERT INTO Pharmacy (branch_id, location)
-  VALUES
-  (p_branch_id, p_location);
-END //
-DELIMITER ;
 
-select * from Hospital;
-call InsertPharmacyData(16003, 'Virginia');
-select * from Pharmacy;
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # insert Room
@@ -477,36 +429,11 @@ BEGIN
     UPDATE Cashier
     SET final_bill_after_insurance = 0
     WHERE patient_id = p_patient_id;
-
-    -- CALL DischargePatient(p_patient_id);
   ELSE
     SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'The bill has already been paid.';
+    SET MESSAGE_TEXT = 'The bill is covered by the insurance coverage';
   END IF;
 END; //
-DELIMITER ;
-
-CALL PayBill(2003);
-select * from Cashier;
--- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-CALL DischargePatient(2003);
-SELECT * from Patient;
-SELECT * FROM Cashier;
-
--- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- procedure to insert into the type of room
-DELIMITER $$
-CREATE PROCEDURE InsertRoomData(
-    IN p_room_type VARCHAR(255),
-    IN p_cost_per_night DECIMAL(10, 2)
-)
-BEGIN
-  INSERT INTO Room (room_type, cost_per_night)
-  VALUES
-  (p_room_type, p_cost_per_night);
-END $$
 DELIMITER ;
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -521,7 +448,7 @@ begin
     -- for update is used to lock the selected row until the end of the transaction
     
     if hospital_count is null then
-		signal sqlstate '45000' set message_text = 'Branch id does not exist';
+		signal sqlstate '45000' set message_text = 'Branch id does nto exist';
 	end if;
     
     update Hospital set no_of_employees = no_of_employees + 1 
@@ -530,11 +457,8 @@ begin
 end$$
 delimiter ;
 -- checking for the trigger, trying to insert an employee
-call new_employee(16002, 'Thor', 'Williams', 'Doctor', 'thor.wi@srk.org', '(645)335-0483', 104);
-select * from Staff;
-select * from Hospital;
-select * from Cashier;
-select * from Patient;
+
+
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- trigger to update the discharge status of the patient based on the amount of bill was paid
 delimiter $$
@@ -546,16 +470,12 @@ begin
 	end if;
 end $$
 delimiter ;
-select * from Patient;
-select * from Medication;
-
-select * from Cashier;
-call generate_bill(2004);
-call PayBill(2004);
-
-select * from Patient;
-select * from Medication;
-SELECT * FROM ROOM;
-select * from inventory;
-select * from Insurance;
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--
+
+
+
+
+
+
+
