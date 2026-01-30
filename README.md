@@ -1,5 +1,5 @@
 # Hospital-Database-Management-System
-# INTRODUCTION:
+### INTRODUCTION:
 
 In today’s world, hospitals generate a vast amount of data every day. Efficient management and organization of this data is crucial to the success of the hospital. In this project, we have developed a Hospital Database Management System using MySQL and Python to provide an easy-to-use and efficient solution for managing hospital data. We have implemented a command line interface that offers a menu-driven output, making it simpler for users to interact with the system. Our primary focus is on designing a system that is scalable and can be extended in the future to accommodate new features and functionality. The project follows an iterative development process, starting with requirements gathering, database design, implementation, and testing. This report provides a detailed description of the database’s architecture, the design choices made, and an evaluation of the system’s performance. The report also includes a user manual and instructions for installation of the required software.
 
