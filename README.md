@@ -3,15 +3,15 @@
 
 In today’s world, hospitals generate a vast amount of data every day. Efficient management and organization of this data is crucial to the success of the hospital. In this project, we have developed a Hospital Database Management System using MySQL and Python to provide an easy-to-use and efficient solution for managing hospital data. We have implemented a command line interface that offers a menu-driven output, making it simpler for users to interact with the system. Our primary focus is on designing a system that is scalable and can be extended in the future to accommodate new features and functionality. The project follows an iterative development process, starting with requirements gathering, database design, implementation, and testing. This report provides a detailed description of the database’s architecture, the design choices made, and an evaluation of the system’s performance. The report also includes a user manual and instructions for installation of the required software.
 
-# Hardware requirements:
+### Hardware requirements:
 
 · Intel Core i5 or higher or OS X 10.9 or higher · RAM: 4GB or higher · Storage: 100GB or higher
 
-# Software requirements:
+### Software requirements:
 
 · Operating System: Windows 10 or Mac OS X or higher · Database Management System: MySQL 8.0 or other · Programming Language: Python 3.8 or higher · Python libraries: pymysql to connect with the database.
 
-# Installation Instructions:
+### Installation Instructions:
 
 To install and set up the Hospital Database Management System, please follow these steps:
 
@@ -23,7 +23,7 @@ Install the required Python packages.
 Run the application using the command “python hospital.py”.
 Commands Available: The available commands once running the application are: · new_department · new_employee · generate_bill · pay_bill · admit_patient · generate_prescription · insert_update_medicine · insert_update_insurance · insert_hospital_data · insert_room_data · quit
 
-# Database Schema: 
+### Database Schema: 
 ##### The Hospital Database Management System uses the following database schema: · Hospital table (name, branch_id, no_of_employees, address, visiting_hours)
 
 · Department table (department_id, name)
