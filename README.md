@@ -23,7 +23,8 @@ Install the required Python packages.
 Run the application using the command “python hospital.py”.
 Commands Available: The available commands once running the application are: · new_department · new_employee · generate_bill · pay_bill · admit_patient · generate_prescription · insert_update_medicine · insert_update_insurance · insert_hospital_data · insert_room_data · quit
 
-# Database Schema: The Hospital Database Management System uses the following database schema: · Hospital table (name, branch_id, no_of_employees, address, visiting_hours)
+# Database Schema: 
+### The Hospital Database Management System uses the following database schema: · Hospital table (name, branch_id, no_of_employees, address, visiting_hours)
 
 · Department table (department_id, name)
 
